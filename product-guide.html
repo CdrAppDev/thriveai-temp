@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThriveAI Product Development Guide</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #21242f;
+    --bg-card-hover: #282c3a;
+    --bg-sidebar: #161821;
+    --border: #2a2e3b;
+    --border-accent: #3b4058;
+    --text-primary: #e8e9ed;
+    --text-secondary: #9499ad;
+    --text-muted: #6b7084;
+    --accent-blue: #4f8ff7;
+    --accent-blue-dim: rgba(79,143,247,0.15);
+    --accent-teal: #34d399;
+    --accent-teal-dim: rgba(52,211,153,0.15);
+    --accent-purple: #a78bfa;
+    --accent-purple-dim: rgba(167,139,250,0.15);
+    --accent-amber: #fbbf24;
+    --accent-amber-dim: rgba(251,191,36,0.15);
+    --accent-rose: #fb7185;
+    --accent-rose-dim: rgba(251,113,133,0.15);
+    --accent-emerald: #34d399;
+    --accent-cyan: #22d3ee;
+    --radius: 10px;
+    --sidebar-width: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sidebar-logo p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar nav a:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .sidebar nav a.active {
+    color: var(--accent-blue);
+    background: var(--accent-blue-dim);
+    border-left-color: var(--accent-blue);
+  }
+
+  .sidebar nav a .nav-icon {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 40px 48px 80px;
+    max-width: calc(100% - var(--sidebar-width));
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-header {
+    margin-bottom: 28px;
+  }
+
+  .section-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .section-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    max-width: 700px;
+  }
+
+  .section-number {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, rgba(79,143,247,0.08) 0%, rgba(52,211,153,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 64px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff, var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .hero .description {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-stat .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-teal);
+  }
+
+  .hero-stat .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+
+  .card-grid-2 {
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: all 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 12px;
+  }
+
+  .card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .card-header .card-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    background: var(--accent-blue-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    margin-top: 12px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .card-body.collapsed {
+    display: none;
+  }
+
+  .expand-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .expand-btn.expanded {
+    transform: rotate(180deg);
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+  }
+
+  .tab:hover {
+    color: var(--text-secondary);
+  }
+
+  .tab.active {
+    color: var(--accent-blue);
+    border-bottom-color: var(--accent-blue);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Tags / Badges */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin: 2px 4px 2px 0;
+  }
+
+  .badge-blue { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .badge-teal { background: var(--accent-teal-dim); color: var(--accent-teal); }
+  .badge-purple { background: var(--accent-purple-dim); color: var(--accent-purple); }
+  .badge-amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .badge-rose { background: var(--accent-rose-dim); color: var(--accent-rose); }
+
+  /* Persona Cards */
+  .persona-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .persona-card:hover {
+    border-color: var(--border-accent);
+  }
+
+  .persona-header {
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .persona-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .persona-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .persona-info .role {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .persona-detail {
+    padding: 0 24px 24px;
+    display: none;
+  }
+
+  .persona-detail.open {
+    display: block;
+  }
+
+  .persona-section {
+    margin-bottom: 16px;
+  }
+
+  .persona-section h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .persona-section p, .persona-section li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .persona-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .persona-section ul li {
+    padding: 4px 0 4px 16px;
+    position: relative;
+  }
+
+  .persona-section ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border-accent);
+  }
+
+  .persona-quote {
+    font-style: italic;
+    color: var(--accent-blue);
+    border-left: 3px solid var(--accent-blue);
+    padding-left: 16px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  /* Journey Map */
+  .journey-timeline {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 16px;
+  }
+
+  .journey-stage {
+    flex: 1;
+    min-width: 240px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .journey-stage + .journey-stage {
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .journey-stage:first-child ~ .journey-stage {
+    border-top-right-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+  }
+
+  .stage-header {
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .stage-header .stage-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .stage-body {
+    padding: 16px 18px;
+    background: var(--bg-secondary);
+  }
+
+  .stage-row {
+    margin-bottom: 14px;
+  }
+
+  .stage-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .stage-row-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .stage-row-label.actions { color: var(--accent-blue); }
+  .stage-row-label.touchpoints { color: var(--accent-teal); }
+  .stage-row-label.pain { color: var(--accent-rose); }
+  .stage-row-label.opportunities { color: var(--accent-amber); }
+
+  .stage-row p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Epic Cards */
+  .epic-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+
+  .epic-card:hover {
+    border-color: var(--border-accent);
+  }
+
+  .epic-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .epic-header-left {
+    flex: 1;
+  }
+
+  .epic-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .epic-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .story-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .story-list li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 6px 0 6px 20px;
+    position: relative;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(42,46,59,0.5);
+  }
+
+  .story-list li:last-child {
+    border-bottom: none;
+  }
+
+  .story-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-blue);
+    background: transparent;
+  }
+
+  .ux-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: rgba(79,143,247,0.06);
+    border-left: 3px solid var(--accent-blue);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    line-height: 1.6;
+  }
+
+  /* UX Principle cards */
+  .ux-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .ux-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .ux-card .principle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+    line-height: 1.7;
+  }
+
+  .ux-card .practice {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: rgba(52,211,153,0.06);
+    border-left: 3px solid var(--accent-teal);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    line-height: 1.6;
+  }
+
+  /* IA Tree */
+  .ia-tree {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    overflow-x: auto;
+  }
+
+  .ia-tree .node { color: var(--text-primary); font-weight: 600; }
+  .ia-tree .leaf { color: var(--accent-blue); }
+  .ia-tree .desc { color: var(--text-muted); font-style: italic; }
+
+  /* Metrics Tables */
+  .metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .metrics-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    font-weight: 600;
+  }
+
+  .metrics-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .metrics-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .metrics-table td:nth-child(2) {
+    color: var(--accent-teal);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Priority list for IA */
+  .priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .priority-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .priority-rank {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-blue-dim);
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .priority-item .name { font-weight: 600; color: var(--text-primary); }
+  .priority-item .desc { color: var(--text-muted); font-size: 12px; margin-left: auto; }
+
+  /* Feature Spec Cards */
+  .spec-status {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  .spec-status.draft { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .spec-status.not-started { background: rgba(107,112,132,0.15); color: var(--text-muted); }
+  .spec-status.complete { background: var(--accent-teal-dim); color: var(--accent-teal); }
+
+  .trace-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .trace-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    font-weight: 600;
+  }
+
+  .trace-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .trace-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .priority-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+
+  .priority-badge.p0 { background: var(--accent-rose-dim); color: var(--accent-rose); }
+  .priority-badge.p1 { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .priority-badge.p2 { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .priority-badge.p3 { background: rgba(107,112,132,0.15); color: var(--text-muted); }
+
+
+  /* Epic Detail Page */
+  .epic-detail-page {
+    display: none;
+    max-width: 900px;
+  }
+
+  .epic-detail-page.active {
+    display: block;
+  }
+
+  .epic-detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+  }
+
+  .epic-detail-back:hover {
+    color: var(--text-primary);
+  }
+
+  .epic-detail-page h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .epic-detail-page .epic-description {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  .epic-detail-section {
+    margin-bottom: 40px;
+  }
+
+  .epic-detail-section-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .jtbd-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .jtbd-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .jtbd-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .jtbd-card-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .jtbd-how-addressed {
+    font-size: 13px;
+    color: var(--accent-teal);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .persona-variant {
+    padding: 12px 16px;
+    border-left: 3px solid var(--border);
+    margin-bottom: 8px;
+    margin-left: 4px;
+  }
+
+  .persona-variant-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .persona-variant-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .persona-variant-role {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .persona-variant-context {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+
+  .persona-variant-success {
+    font-size: 13px;
+    color: var(--accent-teal);
+    line-height: 1.5;
+  }
+
+  .persona-variant-na {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .story-list-detail {
+    list-style: none;
+    padding: 0;
+  }
+
+  .story-list-detail li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding: 10px 0 10px 24px;
+    position: relative;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .story-list-detail li:last-child {
+    border-bottom: none;
+  }
+
+  .story-list-detail li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-blue);
+    background: transparent;
+  }
+
+  .ux-note-detail {
+    font-size: 14px;
+    color: var(--text-secondary);
+    background: rgba(79,143,247,0.06);
+    border-left: 3px solid var(--accent-blue);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    line-height: 1.6;
+  }
+
+  .spec-section {
+    margin-top: 12px;
+  }
+
+  .spec-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .spec-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .spec-section-file {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .spec-detail-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .spec-detail-tab {
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .spec-detail-tab:hover { color: var(--text-secondary); }
+  .spec-detail-tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+
+  .spec-detail-content { display: none; }
+  .spec-detail-content.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .card-grid-2 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .hero-stats { flex-wrap: wrap; gap: 24px; }
+    .journey-timeline { flex-direction: column; }
+    .journey-stage + .journey-stage { margin-left: 0; margin-top: -1px; border-radius: var(--radius); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-accent); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>ThriveAI</h1>
+    <p>Product Development Guide</p>
+  </div>
+  <nav>
+    <a href="#principles" class="active"><span class="nav-icon">&#9670;</span> First Principles</a>
+    <a href="#jtbd"><span class="nav-icon">&#9881;</span> Jobs to Be Done</a>
+    <a href="#personas"><span class="nav-icon">&#9786;</span> Personas</a>
+    <a href="#journeys"><span class="nav-icon">&#10132;</span> User Journeys</a>
+    <a href="#epics"><span class="nav-icon">&#9635;</span> Epics</a>
+    <a href="#ux"><span class="nav-icon">&#9733;</span> UX Principles</a>
+    <a href="#ia"><span class="nav-icon">&#9776;</span> Information Architecture</a>
+    <a href="#metrics"><span class="nav-icon">&#9650;</span> Success Metrics</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>ThriveAI Product Guide</h1>
+    <p class="subtitle">Medical Case Document Intelligence for Litigation</p>
+    <p class="description">A first-principles product development framework grounded in Jobs to Be Done theory. Guiding the development of an AI-powered platform that helps legal teams review, analyze, and understand large medical record collections with forensic-level precision.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="value">7</div><div class="label">First Principles</div></div>
+      <div class="hero-stat"><div class="value">13</div><div class="label">Jobs to Be Done</div></div>
+      <div class="hero-stat"><div class="value">4</div><div class="label">Personas</div></div>
+      <div class="hero-stat"><div class="value">12</div><div class="label">Epics</div></div>
+      <div class="hero-stat"><div class="value">61</div><div class="label">User Stories</div></div>
+    </div>
+  </div>
+
+  <!-- Section 1: First Principles -->
+  <section id="principles">
+    <div class="section-header">
+      <div class="section-number">Section 01</div>
+      <h2>First Principles</h2>
+      <p>Irreducible truths about the problem domain. Not design decisions or feature requirements — facts about medical malpractice litigation that cannot be denied without contradiction.</p>
+    </div>
+    <div class="card-grid" id="principles-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Section 2: Jobs to Be Done -->
+  <section id="jtbd">
+    <div class="section-header">
+      <div class="section-number">Section 02</div>
+      <h2>Jobs to Be Done</h2>
+      <p>Jobs defined per the Ulwick/Christensen framework: solution-agnostic, persona-independent, stable over time, with a clear done state.</p>
+    </div>
+    <div class="tabs" id="jtbd-tabs">
+      <button class="tab active" data-tab="jtbd-functional">Functional (7)</button>
+      <button class="tab" data-tab="jtbd-emotional">Emotional (3)</button>
+      <button class="tab" data-tab="jtbd-social">Social (3)</button>
+    </div>
+    <div id="jtbd-functional" class="tab-content active"></div>
+    <div id="jtbd-emotional" class="tab-content"></div>
+    <div id="jtbd-social" class="tab-content"></div>
+  </section>
+
+  <!-- Section 3: Personas -->
+  <section id="personas">
+    <div class="section-header">
+      <div class="section-number">Section 03</div>
+      <h2>User Personas</h2>
+      <p>The people who use ThriveAI and the contexts that shape their needs.</p>
+    </div>
+    <div class="card-grid card-grid-2" id="personas-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Section 4: User Journeys -->
+  <section id="journeys">
+    <div class="section-header">
+      <div class="section-number">Section 04</div>
+      <h2>User Journey Maps</h2>
+      <p>End-to-end workflows showing how each persona interacts with ThriveAI from case intake to output.</p>
+    </div>
+    <div class="tabs" id="journey-tabs">
+      <button class="tab active" data-tab="j-sarah">Sarah Chen</button>
+      <button class="tab" data-tab="j-wright">Dr. Wright</button>
+      <button class="tab" data-tab="j-maria">Maria Rodriguez</button>
+      <button class="tab" data-tab="j-david">David Kim</button>
+    </div>
+    <div id="j-sarah" class="tab-content active"></div>
+    <div id="j-wright" class="tab-content"></div>
+    <div id="j-maria" class="tab-content"></div>
+    <div id="j-david" class="tab-content"></div>
+  </section>
+
+  <!-- Section 5: Epics -->
+  <section id="epics">
+    <div class="section-header">
+      <div class="section-number">Section 05</div>
+      <h2>Epics</h2>
+      <p>Major product themes, each serving specific jobs to be done. Click any epic to view full details.</p>
+    </div>
+    <div class="card-grid card-grid-2" id="epics-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Epic Detail Page (lives outside sections, takes over the full main area) -->
+  <div id="epic-detail-page" class="epic-detail-page"></div>
+
+  <!-- Section 6: UX Principles -->
+  <section id="ux">
+    <div class="section-header">
+      <div class="section-number">Section 06</div>
+      <h2>UX Principles</h2>
+      <p>Design guidelines specific to the medical-legal domain. High-stakes, trust-critical, courtroom-ready.</p>
+    </div>
+    <div class="card-grid" id="ux-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Section 7: Information Architecture -->
+  <section id="ia">
+    <div class="section-header">
+      <div class="section-number">Section 07</div>
+      <h2>Information Architecture</h2>
+      <p>How the product is organized from the user's perspective.</p>
+    </div>
+    <div class="ia-tree">
+<span class="node">ThriveAI</span>
+<br>&nbsp;&nbsp;<span class="leaf">Dashboard</span> <span class="desc">-- firm-level: all cases, processing status, recent activity</span>
+<br>&nbsp;&nbsp;<span class="leaf">Cases</span> <span class="desc">-- list, create, manage</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="node">[Case Detail]</span> <span class="desc">-- case-level hub</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Summary</span> <span class="desc">-- auto-generated overview, key stats</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Timeline</span> <span class="desc">-- chronological events, filterable, grouped by encounter</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Entities</span> <span class="desc">-- tabular browsers for each entity type</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Documents</span> <span class="desc">-- document list, page browser, document map</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Search</span> <span class="desc">-- unified keyword / semantic / structured / negative</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">ThriveChat</span> <span class="desc">-- conversational AI with citations</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Checklists</span> <span class="desc">-- standard-of-care evaluation</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Quality</span> <span class="desc">-- confidence report, disagreements, coverage</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Notes &amp; Findings</span> <span class="desc">-- team annotations, bookmarks, flagged items</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="leaf">Exports</span> <span class="desc">-- report generation</span>
+<br>&nbsp;&nbsp;<span class="leaf">Source Viewer</span> <span class="desc">-- side-by-side, accessible from any entity/citation</span>
+<br>&nbsp;&nbsp;<span class="leaf">Admin</span> <span class="desc">-- user management, firm settings, usage reports</span>
+    </div>
+
+    <h3 style="margin-top: 32px; margin-bottom: 8px; font-size: 16px;">Case Detail &mdash; Ordered by Usage Frequency</h3>
+    <div class="priority-list" id="ia-priority">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Section 8: Success Metrics -->
+  <section id="metrics">
+    <div class="section-header">
+      <div class="section-number">Section 08</div>
+      <h2>Success Metrics</h2>
+      <p>How to measure whether ThriveAI is actually solving the jobs to be done.</p>
+    </div>
+    <div class="tabs" id="metrics-tabs">
+      <button class="tab active" data-tab="m-adoption">Adoption</button>
+      <button class="tab" data-tab="m-engagement">Engagement</button>
+      <button class="tab" data-tab="m-quality">Quality</button>
+      <button class="tab" data-tab="m-outcomes">Outcomes</button>
+      <button class="tab" data-tab="m-trust">Trust</button>
+    </div>
+    <div id="m-adoption" class="tab-content active"></div>
+    <div id="m-engagement" class="tab-content"></div>
+    <div id="m-quality" class="tab-content"></div>
+    <div id="m-outcomes" class="tab-content"></div>
+    <div id="m-trust" class="tab-content"></div>
+  </section>
+
+</main>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const principles = [
+  { id: 'P1', title: 'Medical Records Are Legal Evidence', body: 'In medical malpractice litigation, the medical record is the primary evidence. Every factual claim — in depositions, expert reports, motions, and at trial — must be traceable to a specific page in a specific document. A fact without provenance is not admissible. A citation without a verifiable source is not credible. The record is the ground truth; everything else is interpretation.', reasoning: [
+          { label: 'Irreducible', text: 'This is a legal fact about evidence rules, not decomposable into simpler truths.' },
+          { label: 'Denial test', text: 'Denying this contradicts the rules of evidence in civil litigation; claims without source documents are inadmissible.' },
+          { label: 'Self-evident', text: 'Accepted without argument by any practitioner in medical malpractice.' },
+          { label: 'Derivation', text: 'From this single truth we can derive source linking requirements, citation obligations, and the prohibition on synthesized facts without provenance.' },
+          { label: 'Context-independent', text: 'True regardless of jurisdiction, case type, or technology used.' },
+        ],
+        sources: [
+          { title: 'Charting Practices to Protect Against Malpractice (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9183775/', quote: 'In court, the medical record is the care rendered. It will be introduced as evidence at trial.' },
+          { title: 'What Evidence is Important in Medical Malpractice Cases', url: 'https://d2triallaw.com/what-evidence-is-important-in-medical-malpractice-cases/' },
+          { title: 'Medical Records in Court Proceedings (US Legal Support)', url: 'https://www.uslegalsupport.com/blog/medical-records-in-court-proceedings/' }
+        ] },
+  { id: 'P2', title: 'What Is Not Documented Did Not Happen', body: 'In malpractice law, the absence of documentation is treated as the absence of care. “There is no record of turning and repositioning” is a case-winning statement. The most consequential findings in medical record review are frequently what is missing from the record, not what is present. Proving an absence is harder than proving a presence, and requires demonstrating that the search was exhaustive.', reasoning: [
+          { label: 'Irreducible', text: 'A single legal doctrine, not decomposable.' },
+          { label: 'Denial test', text: 'Denying this contradicts established malpractice case law ("if it wasn\'t charted, it wasn\'t done" is a legal standard, not a preference).' },
+          { label: 'Self-evident', text: 'Every malpractice attorney and legal nurse consultant operates under this assumption.' },
+          { label: 'Derivation', text: 'Derives the requirement for exhaustive search, synonym expansion, coverage reporting, and the treatment of "not found" as a finding rather than a failure.' },
+          { label: 'Context-independent', text: 'This doctrine applies across all malpractice cases regardless of specialty or venue.' },
+        ],
+        sources: [
+          { title: 'If You Didn\'t Chart It, You Didn\'t Do It (Wilson Law)', url: 'https://wilsonlaw.com/blog/if-you-didnt-chart-it-you-didnt-do-it/', quote: '"If you didn\'t chart it, you didn\'t do it" is a phrase commonly heard in hospitals and medical malpractice courts across the country.' },
+          { title: 'Charting Omissions: Not Documented, Not Done (Legal Nurse Business)', url: 'https://legalnursebusiness.com/charting-omissions-not-documented-not-done/', quote: 'Medical malpractice lawyers often use the phrase about charting omissions to question a professional\'s credibility. They allege and claim inaccurate documentation to convince the jury that essential care was not provided.' },
+          { title: 'Documentation Mistakes That Could Cost You Your License (Nurse.org)', url: 'https://nurse.org/news/nursing-documentation-mistakes/', quote: 'If a patient deteriorates, but there\'s no record of you assessing, notifying the provider, or intervening, you could be held responsible for any harm that follows.' }
+        ] },
+  { id: 'P3', title: 'These Professionals Stake Their Careers on Accuracy', body: 'Attorneys, expert witnesses, and legal nurse consultants put their professional reputations behind every fact they present. A misquoted lab value undermines a deposition. A missed record invalidates an expert opinion. A fabricated finding ends a career. These professionals require information they can independently verify because their professional standing depends on it.', reasoning: [
+          { label: 'Irreducible', text: 'Describes an inherent property of professional practice in litigation, not decomposable into simpler claims.' },
+          { label: 'Denial test', text: 'Denying this would assert that professionals don\'t face consequences for inaccuracy, which contradicts bar ethics rules, expert witness standards, and nursing board regulations.' },
+          { label: 'Self-evident', text: 'Any professional who has testified or submitted work product in litigation understands this viscerally.' },
+          { label: 'Derivation', text: 'Derives confidence scoring, source verification, disagreement surfacing, and the prohibition on hiding uncertainty.' },
+          { label: 'Context-independent', text: 'True across all legal and clinical professions involved in litigation.' },
+        ],
+        sources: [
+          { title: 'The Expert Witness in Medical Malpractice Litigation (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2628518/', quote: 'Expert witnesses may be subject to disciplinary sanctions... An expert who is found to have given false, inaccurate, or misleading testimony can often be held liable.' },
+          { title: 'When an Expert Witness Is Not an Expert (AJR)', url: 'https://ajronline.org/doi/10.2214/ajr.174.5.1741215', quote: 'A disqualification by a judge because of lack of credentials or credibility in one case may seriously impair the effectiveness of the potential expert witness in future cases.' },
+          { title: 'Expert Witness Standards (NCBI Bookshelf)', url: 'https://www.ncbi.nlm.nih.gov/books/NBK436001/' }
+        ] },
+  { id: 'P4', title: 'Clinical and Legal Conclusions Require Human Expertise', body: 'Determining whether care met accepted standards, forming an expert opinion, and developing a legal theory require domain knowledge that cannot be delegated to software. The evidence base can be organized and presented computationally, but the clinical interpretation and legal judgment belong to the professional. The legal system requires human accountability for these conclusions.', reasoning: [
+          { label: 'Irreducible', text: 'A single claim about the nature of clinical and legal judgment, not decomposable.' },
+          { label: 'Denial test', text: 'Denying this would require asserting that software can form expert medical opinions or legal theories, which contradicts the structure of the legal system (expert witness rules require a qualified human).' },
+          { label: 'Self-evident', text: 'No attorney or physician would accept a software-generated standard-of-care opinion as testimony.' },
+          { label: 'Derivation', text: 'Derives the system\'s role boundary: organize, present, and surface evidence, but never conclude. Also derives the requirement to express uncertainty rather than guess.' },
+          { label: 'Context-independent', text: 'The requirement for human accountability in legal and clinical conclusions is a structural feature of the legal system, independent of technology or case specifics.' },
+        ],
+        sources: [
+          { title: 'AI in the Courtroom: Judicial Scrutiny and Evidentiary Tripwires (Epstein Becker Green)', url: 'https://www.ebglaw.com/insights/publications/ai-in-the-courtroom-judicial-scrutiny-and-evidentiary-tripwires', quote: 'AI has never been designated as an expert witness... It is the expert\'s responsibility, not AI\'s, to prepare an analysis or calculation using reliable principles and methods.' },
+          { title: 'Federal Rule of Evidence 707 (Nelson Mullins)', url: 'https://www.nelsonmullins.com/insights/blogs/red-zone/news/safeguarding-the-courtroom-from-ai-generated-evidence-federal-rule-of-evidence-707-approved-by-judicial-conference', quote: 'Rule 707 (approved June 2025) ensures AI-derived evidence meets the same Daubert standards as human expert testimony.' },
+          { title: 'Expert Testimony in Medical Malpractice Cases', url: 'https://www.davidrickslaw.com/library/malpractice-claims-must-be-established-by-expert-testimony.cfm', quote: 'The task of proving negligence on the part of a physician or medical provider must be established by expert witness testimony.' }
+        ] },
+  { id: 'P5', title: 'Clinical Language Is Heterogeneous', body: 'The same clinical event is described differently by different providers, in different document types, using different terminology. “Poor PO intake,” “patient not eating,” “decreased oral intake,” and “NPO” are related but distinct terms for overlapping concepts. “Decubitus ulcer,” “pressure injury,” “bedsore,” and “Stage III sacral wound” refer to the same condition. Abbreviations, synonyms, and context-dependent meanings are pervasive in medical documentation.', reasoning: [
+          { label: 'Irreducible', text: 'Describes an inherent property of clinical language, not a preference or design choice.' },
+          { label: 'Denial test', text: 'Denying this would assert that clinical terminology is consistent and unambiguous, which is contradicted by any page of medical records.' },
+          { label: 'Self-evident', text: 'Anyone who has read a medical chart encounters this immediately.' },
+          { label: 'Derivation', text: 'Derives synonym expansion, terminology normalization, abbreviation resolution, and the requirement that search and extraction bridge vocabulary gaps automatically.' },
+          { label: 'Context-independent', text: 'Clinical language heterogeneity exists independent of any technology, analysis method, or case type.' },
+        ],
+        sources: [
+          { title: 'Pressure Ulcer Terminology (NCBI Bookshelf)', url: 'https://www.ncbi.nlm.nih.gov/books/NBK553107/', quote: 'Synonyms include bedsores, decubitus ulcers, pressure sores...' },
+          { title: 'Pressure Injuries: Terminology and Clinical Overview (NPIAP)', url: 'https://www.internationalguideline.com/etiology', quote: 'In April 2016, the NPUAP announced it was changing its preferred terminology from pressure ulcer to pressure injury.' },
+          { title: 'The Implications of Terminology in Pressure-Related Skin Damage (WoundSource)', url: 'https://www.woundsource.com/blog/opinion-misplaced-debate-pressure-injury-vs-ulcer-when-defining-skin-damage' },
+          { title: 'ICD-10-CM Pressure Ulcer Coding (ACDIS)', url: 'https://acdis.org/articles/news-national-agency-changes-terminology-associated-pressure-ulcers', quote: 'CMS is aware of the array of terms used... pressure ulcer, pressure injury, pressure sore, decubitus ulcer and bed sore.' }
+        ] },
+  { id: 'P6', title: 'Medical Record Collections Exceed Unaided Human Capacity', body: 'Medical malpractice cases routinely involve 500 to 30,000+ pages of records from multiple facilities, covering months to years of care, in heterogeneous formats (typed notes, scanned images, photographs, spreadsheets). No individual can comprehensively review, index, and cross-reference a collection of this size without missing relevant information. Case review is sustained work spanning days or weeks, not a single session.', reasoning: [
+          { label: 'Irreducible', text: 'States two related facts: the scale of medical record collections exceeds human cognitive capacity, and review is sustained over time. (Note: these are tightly coupled — the sustained nature of the work is a direct consequence of the scale.)' },
+          { label: 'Denial test', text: 'Denying this would assert that a single person can comprehensively process 30,000 pages without missing information, which contradicts cognitive science and practitioner experience.' },
+          { label: 'Self-evident', text: 'Every legal nurse consultant and attorney who has received a case file understands the volume problem immediately.' },
+          { label: 'Derivation', text: 'Derives the need for computational indexing, persistent work state, multi-session workflows, and cumulative case understanding.' },
+          { label: 'Context-independent', text: 'Record volume is a property of the healthcare and legal systems, not of any particular tool or methodology.' },
+        ],
+        sources: [
+          { title: 'How Record Insights Transforms Case Preparation (Lexitas Legal)', url: 'https://www.lexitaslegal.com/resources/unlocking-efficiency-in-medical-record-review', quote: 'Even a moderately complex case can involve thousands, or even tens of thousands, of pages of patient records.' },
+          { title: 'Nursing Home Medical Records: A Primer for Litigators (Expert Institute)', url: 'https://www.expertinstitute.com/resources/insights/nursing-home-medical-records-a-primer-for-nursing-home-litigators/', quote: 'Medical records in nursing home cases are so voluminous that the only way to ensure thoroughness is to have them reviewed by several different people.' },
+          { title: 'Mastering Medical Record Review (MRC Houston)', url: 'https://mrchouston.com/mastering-medical-record-review-a-vital-skill-for-todays-legal-professionals/', quote: 'Sifting through thousands of pages of medical records can be frustrating and time-consuming... Legal nurse consultants are skilled in navigating medical records efficiently.' }
+        ] },
+  { id: 'P7', title: 'In Legal Proceedings, Inaccuracy Causes Irreversible Harm', body: 'A wrong date in a deposition outline, a misattributed lab result in an expert report, or a missed critical record undermines legal proceedings in ways that cannot be remediated by speed of delivery. The consequences of inaccuracy in this domain are disproportionate and permanent — a case theory built on a wrong fact collapses, and the professional who relied on it bears the consequences.', reasoning: [
+          { label: 'Irreducible', text: 'A single claim about the asymmetric consequences of error in litigation, not decomposable.' },
+          { label: 'Denial test', text: 'Denying this would assert that inaccuracy in legal proceedings is recoverable or inconsequential, which contradicts the adversarial nature of litigation (opposing counsel exploits every error).' },
+          { label: 'Self-evident', text: 'Any attorney who has had a fact challenged in cross-examination understands the irreversibility.' },
+          { label: 'Derivation', text: 'Derives the priority of accuracy over speed, dual-run extraction verification, and the requirement to surface uncertainty rather than present best guesses.' },
+          { label: 'Context-independent', text: 'The irreversibility of error in adversarial proceedings is a structural property of the legal system, independent of technology or case specifics.' },
+        ],
+        sources: [
+          { title: 'Charting Practices to Protect Against Malpractice (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9183775/', quote: 'Documentation issues are thought to play a role in up to 20% of malpractice lawsuits... missing documentation (70%), inaccurate content (22%). Case example: Prager v. Campbell Memorial Hospital — $9 million verdict.' },
+          { title: 'Medical Malpractice & the Standard of Care (Fieger Law)', url: 'https://www.fiegerlaw.com/blog/what-does-standard-of-care-mean-in-a-medical-malpractice-case/' }
+        ] },
+];
+
+const jtbd = {
+  functional: [
+    { id: 'J1', title: 'Determine what happened to a patient over the course of their care', body: 'When I receive a new medical case, I want to determine what happened to the patient — which providers were involved, at which facilities, during what time period, and in what sequence — so I can understand the case and form my initial assessment.', variants: [] },
+    { id: 'J2', title: 'Confirm what is and is not documented in the record', body: 'When I need to support or refute a claim about a patient’s care, I want to determine whether specific events, conditions, or interventions are documented in the record — and when they are not, demonstrate that the search was thorough — so I can make evidence-based arguments about both presence and absence.', variants: [] },
+    { id: 'J3', title: 'Evaluate whether care met accepted clinical standards', body: 'When I need to assess the quality of care a patient received, I want to systematically compare what happened against expected clinical protocols and documentation requirements, so I can identify where care met or deviated from accepted standards.', variants: [] },
+    { id: 'J4', title: 'Confirm that extracted information faithfully represents the source', body: 'When I encounter information that was extracted or computed from the original records, I want to compare it against the original document, so I can verify its accuracy before relying on it in legal proceedings.', variants: [] },
+    { id: 'J5', title: 'Distill case findings into coherent narrative', body: 'When I need to communicate findings to colleagues, courts, or clients, I want to synthesize information from across the record into clear, cited summaries, so I can convey the case story accurately and efficiently.', variants: [] },
+    { id: 'J6', title: 'Produce legal work product from case analysis', body: 'When I have completed my analysis of a case, I want to generate formatted, cited outputs — chronologies, reports, evaluation summaries — that meet legal practice requirements, so my work product is immediately usable in proceedings.', variants: [] },
+    { id: 'J7', title: 'Organize a heterogeneous medical record collection', body: 'When I receive a disorganized collection of documents from multiple sources in varying formats, I want the records classified, deduplicated, and organized by type and chronology, so I can navigate the collection efficiently.', variants: [] },
+  ],
+  emotional: [
+    { id: 'E1', title: 'Professional Confidence', body: 'When I present findings from a medical record review to a judge, opposing counsel, or a client, I want to feel certain that the information is accurate and verifiable, so I can maintain my professional reputation and credibility.', variants: [] },
+    { id: 'E2', title: 'Thoroughness Assurance', body: 'When I close a case file, I want to know that nothing was missed in the record review, so I can avoid the anxiety of potentially overlooking a critical piece of evidence that surfaces later.', variants: [] },
+    { id: 'E3', title: 'Mastery Over Complexity', body: 'When I face a 30,000-page case that would take weeks to review manually, I want to feel in control and systematic in my approach, so I can manage overwhelming volumes without feeling lost or unsure of my progress.', variants: [] },
+  ],
+  social: [
+    { id: 'S1', title: 'Demonstrate Diligence', body: 'When opposing counsel challenges my thoroughness, I want to produce reports showing comprehensive search coverage and systematic analysis, so I can demonstrate to the court that my review was exhaustive.', variants: [] },
+    { id: 'S2', title: 'Empower Expert Witnesses', body: 'When I hand off a case to a medical expert, I want to provide them with organized, indexed, and annotated records, so the expert can focus on clinical judgment rather than document navigation.', variants: [] },
+    { id: 'S3', title: 'Justify Investment', body: 'When I advocate for a medical record review capability within my firm, I want measurable time savings and case outcomes data, so I can demonstrate ROI to partners and administrators.', variants: [] },
+  ]
+};
+
+const personas = [
+  {
+    name: 'Sarah Chen', role: 'Plaintiff’s Attorney (Primary)', initials: 'SC',
+    color: 'var(--accent-blue)', bgColor: 'var(--accent-blue-dim)',
+    context: 'Partner at a 15-attorney plaintiff’s firm specializing in medical malpractice and nursing home neglect. Handles 20-30 active cases. Each case involves 500 to 25,000 pages. Not a clinician but has strong medical vocabulary over 14 years of practice.',
+    goals: ['Find facts that build her case theory', 'Identify gaps in care through absence detection', 'Prepare for depositions with precise timeline knowledge', 'Generate case summaries for clients and co-counsel'],
+    frustrations: ['Spends 40+ hours per case manually reviewing records', 'Worries about missing critical records in large document sets', 'Burned by AI tools that hallucinate or overstate findings', 'Existing tools miss medical domain patterns'],
+    quote: 'I need to know two things: what happened, and what should have happened but didn’t.',
+    jtbd: ['J1', 'J2', 'J3', 'J5', 'J6'],
+    jobOutcomes: [
+      { job: 'J1', label: 'Determine what happened', context: 'Receives a new case and needs to understand the scope before developing her theory of liability. Identifies critical decision points where care deviated from standards, isolating specific providers and facilities during specific time windows.', success: 'Can identify the key players, time period, care trajectory, and critical decision points. Can articulate what happened at a specific facility by a specific provider with source-document backing for every claim.' },
+      { job: 'J2', label: 'Confirm what is documented', context: 'Building a case theory requires establishing specific facts (when a wound first appeared, when family was notified) AND proving specific absences (“there is no record of turning and repositioning”). Each positive finding must be source-linked for deposition. Each negative finding must survive cross-examination.', success: 'Every factual claim she presents is traceable to a specific source page. Every absence claim she makes can withstand a challenge of “how do you know it’s not in there?” with demonstrable evidence of exhaustive search.' },
+      { job: 'J3', label: 'Evaluate against standards', context: 'Building her case around specific standard-of-care violations. Needs to systematically prove that required assessments, interventions, or documentation were missing or inadequate.', success: 'Can present a systematic analysis of each expected care element — what was done, what was not done, and where the evidence for each determination resides.' },
+      { job: 'J5', label: 'Distill into narrative', context: 'Preparing case summaries, demand letters, and trial narratives that weave together facts from across the record.', success: 'Can produce accurate, cited narrative summaries that serve as starting points for legal documents without re-reading the full record.' },
+      { job: 'J6', label: 'Produce work product', context: 'Needs case summaries, demand letters with citations, deposition outlines, and standard-of-care analyses for motions. All outputs require bates citations.', success: 'Work product meets legal practice formatting requirements and can be filed or presented without manual reformatting or re-citation.' },
+    ]
+  },
+  {
+    name: 'Dr. James Wright', role: 'Medical Expert Witness', initials: 'JW',
+    color: 'var(--accent-teal)', bgColor: 'var(--accent-teal-dim)',
+    context: 'Retired internist serving as expert witness in 15-20 cases per year. Reviews records to assess standard of care and prepare expert reports. Charges $500-800/hour. His time is expensive and his opinions carry weight.',
+    goals: ['Efficiently review records organized by clinical relevance', 'Assess whether care met accepted standards', 'Identify records supporting or contradicting his opinions', 'Prepare defensible expert reports with precise citations'],
+    frustrations: ['Receives records in disorganized PDF dumps', 'Can’t quickly locate things he knows should be documented', 'Needs lab trends over time, not individual values buried across pages', 'No clinical context or organization in handed-off records'],
+    quote: 'Show me the nursing assessments in chronological order, then show me every documented repositioning event. I’ll tell you if this was appropriate care.',
+    jtbd: ['J1', 'J2', 'J3', 'J4', 'J5', 'J6'],
+    jobOutcomes: [
+      { job: 'J1', label: 'Determine what happened', context: 'Receives a case package with no context. Needs to understand “what kind of case is this?” and trace the full clinical arc — correlating interventions with outcomes and establishing the care sequence he’ll testify about. His $500–800/hr rate makes orientation time expensive.', success: 'Can identify the care arc, key facilities, time period, and clinical decision points without reading individual documents. Can orient to a new case in hours rather than days.' },
+      { job: 'J2', label: 'Confirm what is documented', context: 'Searching for specific clinical data to support or refute his expert opinion. Needs to confirm that expected assessments or interventions are genuinely present or genuinely absent — not just hard to find in a large record set.', success: 'Can locate specific clinical documentation across the full record. When something should exist but doesn’t, has confidence the absence is real and not a search failure.' },
+      { job: 'J3', label: 'Evaluate against standards', context: 'Evaluating care against clinical standards he knows from decades of practice. Needs to verify whether expected assessments, interventions, and documentation occurred at the right intervals. His opinion must be defensible under cross-examination.', success: 'Can systematically assess each expected care element and distinguish “not documented” from “documented but inadequate.” His opinion rests on evidence he can cite, not recollection.' },
+      { job: 'J4', label: 'Verify against source', context: 'Every fact he cites will be challenged under oath. Needs to confirm that derived or summarized information accurately represents what the original document says, especially for poor-quality scans or handwritten notes.', success: 'Can confirm any cited fact matches the original document before testifying. Has confidence that the information he relies on faithfully represents the source.' },
+      { job: 'J5', label: 'Distill into narrative', context: 'Needs to synthesize findings into his expert report — connecting observations across time, correlating lab trends with clinical events, explaining the significance of care patterns.', success: 'Can produce cited narrative connecting related findings across the record without manually cross-referencing hundreds of pages.' },
+      { job: 'J6', label: 'Produce work product', context: 'Prepares expert reports requiring precise bates citations for every factual claim.', success: 'Every factual claim in his report has a precise, verifiable citation. Report can be submitted without manual citation reformatting.' },
+    ]
+  },
+  {
+    name: 'Maria Rodriguez', role: 'Legal Nurse Consultant / Paralegal', initials: 'MR',
+    color: 'var(--accent-purple)', bgColor: 'var(--accent-purple-dim)',
+    context: 'LNC at a mid-sized plaintiff’s firm. First person to touch medical records on every case. Handles 8-12 cases simultaneously. Former RN with deep clinical training.',
+    goals: ['Rapidly classify and organize incoming document collections', 'Create medical chronologies and summaries for attorney review', 'Identify issues and flag them for attorney attention', 'Maintain organized, indexed case files for the team'],
+    frustrations: ['60% of time spent on manual data entry, not clinical analysis', 'Different facilities use different record formats', 'No way to flag important findings persistently', 'Manual organization isn’t searchable or queryable'],
+    quote: 'If the system could do the indexing and chronology, I could spend my time on the clinical analysis that actually requires my nursing background.',
+    jtbd: ['J1', 'J2', 'J3', 'J5', 'J6', 'J7'],
+    jobOutcomes: [
+      { job: 'J1', label: 'Determine what happened', context: 'First person to touch records on every case. Must triage 8–12 simultaneous cases and determine what’s present, what’s missing, and what needs follow-up. Builds the initial medical chronology that attorneys and experts rely on.', success: 'Can assess completeness by facility and record type. Initial chronology is accurate enough for the team to build on. Issues are identified and communicated before they become surprises.' },
+      { job: 'J2', label: 'Confirm what is documented', context: 'Performing the initial fact-gathering the team builds on. Identifies gaps — missing nursing assessments, absent flow sheets, documentation holes between facilities. Flags these before the attorney or expert discovers them.', success: 'Can search by clinical concept and get comprehensive results across all documents. Knows what’s missing and where it should have appeared. Fact sheets are reliable enough for the team to cite.' },
+      { job: 'J3', label: 'Evaluate against standards', context: 'Performs the initial standard-of-care screening before the expert reviews the case. Uses her clinical nursing knowledge to flag areas of concern and identify the strongest issues.', success: 'Can produce a preliminary analysis of expected vs. actual care that focuses the expert’s expensive review time on the highest-value areas.' },
+      { job: 'J5', label: 'Distill into narrative', context: 'Preparing case summaries and status memos that orient attorneys and experts to the case. Needs to distill thousands of pages into concise clinical narratives organized by topic.', success: 'Can produce initial case narratives organized by clinical topic that she refines with her clinical judgment. Attorneys get a reliable starting point rather than raw data.' },
+      { job: 'J6', label: 'Produce work product', context: 'Produces the initial medical chronology, case summaries, and issue-flagging memos the rest of the team builds on.', success: 'Chronology and summaries meet legal practice formatting requirements. Work product is immediately usable by attorneys and experts without re-processing.' },
+      { job: 'J7', label: 'Organize the record', context: 'Receives records from multiple facilities in different formats, arriving in batches over weeks. Currently spends 60% of her time on manual organization.', success: 'Records are navigable by clinical document type and chronology. New batches can be incorporated without re-processing the entire collection. Her time shifts from manual organization to clinical analysis.' },
+    ]
+  },
+  {
+    name: 'David Kim', role: 'Defense Attorney / Insurance Adjuster', initials: 'DK',
+    color: 'var(--accent-amber)', bgColor: 'var(--accent-amber-dim)',
+    context: 'Associate at a defense firm representing hospitals and physicians. Evaluates cases for insurance carriers to recommend settlement vs. trial. Needs the same records from the opposite perspective.',
+    goals: ['Quickly assess case exposure', 'Find documentation supporting standards of care were met', 'Identify weaknesses in plaintiff’s arguments', 'Generate case evaluation summaries for carriers'],
+    frustrations: ['Same massive record sets but less time budget', 'Needs positive evidence rather than gaps', 'Case evaluation requires rapid turnaround', 'Existing tools designed for plaintiff workflows'],
+    quote: 'I need to know in 48 hours whether this case has merit. Show me the documentation that proves my client did everything right.',
+    jtbd: ['J1', 'J2', 'J3', 'J6'],
+    jobOutcomes: [
+      { job: 'J1', label: 'Determine what happened', context: 'Must evaluate case exposure within 48 hours for insurance carriers. Needs the fastest path from “I’ve never seen this case” to “here’s what happened and whether it has merit.”', success: 'Can form a defensible initial exposure assessment — key events, providers, date range, and case merit — within 48 hours of receiving the case.' },
+      { job: 'J2', label: 'Confirm what is documented', context: 'Looking for positive evidence that care WAS provided and protocols WERE followed. Also needs to anticipate the plaintiff’s absence arguments — running the same searches they’ll run to verify whether documentation exists or is genuinely missing.', success: 'When documentation exists, finds it. When it’s genuinely absent, knows in advance so the defense strategy accounts for it rather than being surprised at deposition.' },
+      { job: 'J3', label: 'Evaluate against standards', context: 'Needs to demonstrate that care met standards — the opposite of plaintiff’s analysis. Runs the same evaluations the plaintiff will run, looking for documentation that protocols were followed.', success: 'Knows where the documentation supports the defense and where it’s vulnerable before the plaintiff identifies either. Can build a defense narrative around documented compliance.' },
+      { job: 'J6', label: 'Produce work product', context: 'Produces case evaluation summaries for insurance carriers: key findings, risk assessment, and cited evidence. Turnaround measured in days, not weeks.', success: 'Carrier evaluation with cited evidence is delivered within the assessment window and meets carrier reporting requirements without reformatting.' },
+    ]
+  }
+];
+
+const journeys = {
+  'j-sarah': {
+    title: 'Sarah Chen \u2014 Nursing Home Neglect Case',
+    stages: [
+      { name: 'Case Intake', time: 'Day 0', actions: 'Receives 8,000 pages from 3 facilities. Creates case. Uploads all documents.', touchpoints: 'Case creation, document upload, processing status', pain: 'Uncertainty about upload completeness. Anxiety during processing.', opportunities: 'Real-time progress with page counts. Auto-detect duplicates and facility boundaries.' },
+      { name: 'Orientation', time: 'Day 1', actions: 'Reviews quality report. Scans document map. Browses timeline at high level.', touchpoints: 'Quality report, document browser, timeline, dashboard', pain: 'Needs to separate clinical records from billing noise. "Do I have complete records?"', opportunities: 'Auto-generated case summary. Highlight date coverage gaps. Completeness warnings.' },
+      { name: 'Theory Development', time: 'Days 2-5', actions: 'Targeted searches. Filters timeline. Runs checklists. Uses ThriveChat for synthesis.', touchpoints: 'Search, timeline, checklists, ThriveChat, entity browsers', pain: 'Needs to build arguments, not just find facts. Wants to save/organize findings.', opportunities: 'Investigation workspace. Saved queries. Progress tracking.' },
+      { name: 'Verification', time: 'Days 5-10', actions: 'Source viewer for critical findings. Reviews disagreements. Validates absence results.', touchpoints: 'Source viewer, quality report, negative search reports', pain: 'Cognitively expensive context switching. Need confidence in low-confidence pages.', opportunities: 'Batch verification workflow. Page annotations. Verification audit trail.' },
+      { name: 'Output', time: 'Days 10-15', actions: 'Generates chronology for expert. Deposition outlines. Case summary with absence docs.', touchpoints: 'Export/reports, ThriveChat drafting, timeline export', pain: 'Needs Word docs with bates citations. Needs to share with expert.', opportunities: 'DOCX export with bates. Shareable case package. Deposition prep mode.' },
+    ]
+  },
+  'j-wright': {
+    title: 'Dr. Wright \u2014 Standard of Care Review',
+    stages: [
+      { name: 'Orientation', time: 'Hours 0-2', actions: 'Receives case from attorney. Reviews summary and quality report. Scans timeline.', touchpoints: 'Dashboard, quality report, timeline, case summary', pain: 'Records without context. Needs to quickly understand case type.', opportunities: 'Attorney case brief. Pre-flagged areas. Clinical summary.' },
+      { name: 'Clinical Review', time: 'Hours 2-8', actions: 'Reviews labs as trends, nursing assessments chronologically, medication history. Runs checklists.', touchpoints: 'Entity browsers, timeline, checklists, lab trends', pain: 'Needs trends, not flat tables. Must correlate events across types.', opportunities: 'Lab trend visualization. Cross-entity correlation. Clinical system dashboard.' },
+      { name: 'Opinion & Report', time: 'Hours 8-16', actions: 'Formulates opinions. Searches for evidence. Documents deviations with citations. Writes report.', touchpoints: 'Search, ThriveChat, source viewer, checklists, citations', pain: 'Thinks in clinical standards, not queries. Reports need bates citations.', opportunities: 'Clinical protocol templates. Natural-language queries. Citation clipboard.' },
+    ]
+  },
+  'j-maria': {
+    title: 'Maria Rodriguez \u2014 Case Setup and Preparation',
+    stages: [
+      { name: 'Upload', time: 'Hours 0-1', actions: 'Receives records from multiple sources. Uploads to ThriveAI. Reviews completeness.', touchpoints: 'Document upload, processing status', pain: 'Records arrive in batches over weeks. Different naming conventions.', opportunities: 'Incremental upload. Duplicate detection. Source/batch tracking.' },
+      { name: 'Quality Review', time: 'Hours 1-3', actions: 'Reviews quality report. Identifies low-quality pages. Checks for missing types. Flags issues.', touchpoints: 'Quality report, document browser, document map', pain: 'No way to tag docs as "needs re-request" or "wrong patient."', opportunities: 'Document tagging. Expected record checklist. Auto gap detection.' },
+      { name: 'Indexing', time: 'Hours 3-8', actions: 'Reviews auto-timeline for accuracy. Corrects errors. Creates chronology. Flags key events.', touchpoints: 'Timeline, entity browsers, annotation tools', pain: 'Can\u2019t correct extraction errors. Can\u2019t add clinical interpretations.', opportunities: 'Entity correction workflow. LNC review status. Annotated chronology export.' },
+      { name: 'Handoff', time: 'Hour 8+', actions: 'Prepares case summary memo. Highlights findings. Shares with attorney.', touchpoints: 'Export, case sharing, annotations', pain: 'No in-system way to communicate findings and concerns.', opportunities: 'In-system case notes. Key findings panel. Attorney notification.' },
+    ]
+  },
+  'j-david': {
+    title: 'David Kim \u2014 Defense Case Evaluation',
+    stages: [
+      { name: 'Case Receipt', time: 'Hours 0-2', actions: 'Receives case from insurance carrier or partner. Opens in ThriveAI. Reviews case summary and quality report for initial scope assessment.', touchpoints: 'Case dashboard, quality report, case summary', pain: 'Often receives massive records with a 48-hour turnaround for initial assessment. No time to read everything.', opportunities: 'Auto-generated case summary with key events, providers, and date range. Immediate scope indicators (page count, facilities, time span).' },
+      { name: 'Rapid Assessment', time: 'Hours 2-8', actions: 'Scans timeline for key events. Filters by provider and facility. Reviews standard-of-care checklists from the defense perspective. Identifies documentation supporting appropriate care.', touchpoints: 'Timeline, entity browsers, checklists, search', pain: 'Needs to find positive evidence (care WAS documented) not gaps. Existing tools designed for plaintiff workflows.', opportunities: 'Defense-oriented checklist view showing documented compliance. Quick filters for care documentation by category.' },
+      { name: 'Exposure Analysis', time: 'Hours 8-16', actions: 'Runs the same searches and checklists the plaintiff would run. Identifies weak points. Assesses documentation gaps. Uses ThriveChat for synthesis questions.', touchpoints: 'Search, checklists, ThriveChat, negative search reports', pain: 'Must anticipate plaintiff arguments. Needs to see both what\u2019s strong and what\u2019s vulnerable in the defense.', opportunities: 'Side-by-side defense/plaintiff checklist view. Vulnerability assessment report. Plaintiff argument preview.' },
+      { name: 'Carrier Report', time: 'Hours 16-24', actions: 'Prepares case evaluation memo for insurance carrier. Recommends settlement range or trial strategy. Exports key findings with citations.', touchpoints: 'Export, ThriveChat drafting, citation management', pain: 'Carrier reports need specific formats. Must include bates-cited evidence for key conclusions.', opportunities: 'Carrier report template. Exportable case evaluation with citations. Settlement range analysis based on identified issues.' },
+    ]
+  }
+};
+
+const epics = [
+  { id: 1, title: 'Document Ingestion & Processing', desc: 'Reliable ingestion of heterogeneous medical document collections with quality reporting. Handles PDF, DOCX, XLSX, images, scans.', jtbd: ['J7'], stories: ['As Maria, I want to upload documents in any common format (PDF, DOCX, XLSX, images) so that I don\u2019t have to pre-convert files before ingestion.', 'As Maria, I want to add documents to an existing case incrementally so that I can process new records as they arrive without re-ingesting the entire case.', 'As Maria, I want documents automatically classified by type (progress note, lab report, nursing flow sheet, etc.) so that the collection is organized without manual sorting.', 'As Sarah, I want duplicate pages identified and excluded from entity counts so that my analysis is based on unique records, not inflated by duplicates.', 'As Maria, I want to see real-time processing progress with page counts so that I can plan my time while a large case processes.'], ux: 'Processing is async. Provide clear progress, not just a spinner. Handle very large file sets. Show incremental results.' },
+  { id: 2, title: 'Structured Entity Extraction', desc: 'Page-level extraction of 7 entity types with dual-run verification and Comprehend Medical grounding. Every entity links to source. Foundational epic — extraction enables J1 (timeline), J3 (checklists), J5 (narrative synthesis), and J7 (classification).', jtbd: ['J2', 'J1', 'J3', 'J5', 'J7'], stories: ['As Sarah, I want every extracted entity linked to its source page so that I can verify any data point against the original record.', 'As Dr. Wright, I want lab results extracted with test name, value, unit, reference range, and abnormal flag so that I can review lab trends without reading individual reports.', 'As Sarah, I want negated concepts (\u201cpatient denies pain,\u201d \u201cno pressure ulcers observed\u201d) clearly distinguished from positive findings so that I don\u2019t build a case theory on misread documentation.', 'As Maria, I want to see and review extraction disagreements between runs so that I can resolve ambiguous data points before the team relies on the data.', 'As Dr. Wright, I want observations tagged with normalized clinical concepts so that I can search for clinical phenomena regardless of how providers described them.'], ux: 'Confidence scores visible but not distracting \u2014 colored dots, not numbers. Disagreements in quality report, not main flow.' },
+  { id: 3, title: 'Timeline & Chronology', desc: 'Auto-generated chronological timeline of all events, grouped by encounter, filterable by type/provider/facility/confidence.', jtbd: ['J1'], stories: ['As Sarah, I want a chronological timeline of all clinical events filterable by provider and facility so that I can isolate what happened at a specific location during a specific period.', 'As Dr. Wright, I want to filter the timeline by entity type so that I can focus on specific aspects of care.', 'As Dr. Wright, I want timeline events grouped by encounter so that I can see everything that happened during a single visit or admission.', 'As Sarah, I want date coverage gaps highlighted in the timeline so that I can identify periods with missing records.', 'As Maria, I want to review the auto-generated timeline for accuracy and flag grouping errors so that the chronology the team relies on is correct.', 'As David, I want to scan the full timeline and quickly identify events where care was appropriately documented so that I can build the defense narrative within a 48-hour turnaround.'], ux: 'Most-used view. Must handle thousands of events. Paginate by date groups. Year/month/week/day zoom levels.' },
+  { id: 4, title: 'Multi-Modal Search', desc: 'Keyword, semantic, and structured search plus negative/absence search. Unified experience routing to appropriate mode.', jtbd: ['J2'], stories: ['As Sarah, I want to search for exact phrases across all extracted text so that I can find specific clinical terms or documentation.', 'As Dr. Wright, I want semantic search that understands clinical synonyms so that searching for \u201cpoor oral intake\u201d also finds \u201cpatient not eating\u201d and \u201cdecreased PO.\u201d', 'As Sarah, I want negative search that proves absence by reporting synonyms searched, pages covered, and near-misses so that I can confidently assert something is not in the record.', 'As Maria, I want a unified search bar that intelligently routes my query to the right search mode so that I don\u2019t need to understand the technical differences.', 'As David, I want to save and re-run searches across cases so that I can apply the same analysis pattern to similar case types.'], ux: 'Negative search report is a unique differentiator \u2014 must be courtroom-presentation ready.' },
+  { id: 5, title: 'ThriveChat \u2014 Conversational AI', desc: 'Natural language queries with tool calling, streaming responses, and mandatory source citations. Multi-turn with context persistence.', jtbd: ['J5'], stories: ['As Sarah, I want to ask natural language questions and receive answers with citations to specific source pages so that I can quickly get answers without constructing searches.', 'As Dr. Wright, I want to ask questions using clinical terminology so that \u201cwas sepsis protocol followed?\u201d returns relevant documentation without requiring me to translate my question into search terms.', 'As Sarah, I want a clear distinction between what is documented in the record and what is inferred or synthesized so that I don\u2019t mistake interpretation for established fact.', 'As Maria, I want to save important chat responses as case notes so that insights from conversations become part of the case file.', 'As David, I want to ask the chat broad case evaluation questions so that I can generate an initial case assessment for the insurance carrier within hours of receiving the case.'], ux: 'Never a black box. Every claim needs a citation. \u201cNot found\u201d links to negative search report. Suggested follow-ups.' },
+  { id: 6, title: 'Standard-of-Care Checklists', desc: 'Pre-built and custom protocol templates. Found/not-found/partial results with linked evidence for each item.', jtbd: ['J3'], stories: ['As Dr. Wright, I want pre-built checklists for common malpractice areas (pressure injury prevention, fall prevention, sepsis management) so that I can systematically evaluate care.', 'As Dr. Wright, I want to create custom checklists for specific clinical scenarios so that I can evaluate against standards relevant to the case.', 'As Sarah, I want checklist results showing found/not-found/partial with linked evidence so that I can quickly identify documentation gaps.', 'As Dr. Wright, I want to distinguish between \u201cnot documented\u201d and \u201cdocumented but inadequate\u201d when evaluating care elements so that my expert opinion reflects the nuance of what actually occurred.', 'As Maria, I want firm-level checklist templates that persist across cases so that our team can standardize evaluations.', 'As David, I want to run the same standard-of-care checklists the plaintiff will run so that I can anticipate their arguments and identify where documentation supports the defense.'], ux: '\u201cNot found\u201d items include negative search data. \u201cFound\u201d items show evidence inline for adequacy assessment.' },
+  { id: 7, title: 'Source Verification & Document Viewer', desc: 'Side-by-side extracted text and original document image. The trust mechanism. Supports annotation and correction.', jtbd: ['J4'], stories: ['As Sarah, I want to click any entity or search result and instantly see the source page with extracted text and original document side-by-side so that I can verify accuracy.', 'As Dr. Wright, I want to navigate between pages within a document without leaving the source viewer so that I can read multi-page records in context.', 'As Maria, I want to annotate source pages with notes and flag extraction errors so that the team can improve data quality.', 'As Sarah, I want extracted entities highlighted within the text view so that I can see exactly which text produced each entity.', 'As David, I want to click any entity cited by opposing counsel and instantly view the original source page so that I can verify their interpretation and identify mischaracterizations.'], ux: 'In-document navigation. Highlight sourcing passages. Zoom/pan for poor scans. Direct links from any entity.' },
+  { id: 8, title: 'Quality & Confidence System', desc: 'Case-level and page-level quality reporting, disagreement management, OCR tracking, coverage metrics. Because these professionals bear personal consequences for inaccuracy (P3) and need assurance nothing was missed (E2), the system surfaces reliability characteristics of every extraction.', jtbd: ['P3', 'E2'], stories: ['As Sarah, I want a case-level quality report showing confidence distribution, entity coverage, and disagreements so that I understand the reliability of the data.', 'As Maria, I want to see which pages had low OCR confidence so that I can prioritize manual review.', 'As Sarah, I want extraction disagreements surfaced with both run values visible so that I can resolve ambiguous data points.', 'As Dr. Wright, I want confidence indicators on timeline events and entity records so that I can weight my reliance appropriately.', 'As Sarah, I want a coverage report showing which document types are present and missing so that I can identify record gaps before investing in deep analysis.'], ux: 'Make quality contextual \u2014 entity-specific confidence when browsing, quality context in negative searches. Consistent visual language.' },
+  { id: 9, title: 'Case Management & Collaboration', desc: 'Multi-user case access with role-based permissions, notes, annotations, and workflow tracking. Legal case review is a multi-role sequential process — LNC organizes, attorney directs, expert opines. This epic supports the handoffs and shared context that workflow requires.', jtbd: ['S2'], stories: ['As Sarah, I want to share a case with my expert witness with controlled access so that they can review records without altering the case file.', 'As Maria, I want to flag entities or timeline events for attorney review with a note explaining why so that I can direct attention to important findings.', 'As Sarah, I want case-level bookmarks and pins so that I can collect important findings as I work through a case over multiple sessions.', 'As Dr. Wright, I want to access a shared case with pre-organized records, flagged findings, and LNC annotations so that I can begin my expert review immediately without spending billable hours on orientation.', 'As Maria, I want to add case notes visible to the team so that my observations are captured alongside the data.', 'As Dr. Wright, I want to add my own annotations and preliminary opinions to the case file so that the attorney can see my assessment evolving as I review.'], ux: 'Legal collaboration is structured, not free-form. LNC prepares; attorney reviews; expert opines. Sequential, not simultaneous.' },
+  { id: 10, title: 'Export & Reporting', desc: 'Formatted outputs for legal proceedings: chronologies, citations, checklists, negative search certificates. Bates numbers throughout.', jtbd: ['J6'], stories: ['As Maria, I want to export the timeline as a Word document with bates number citations so that attorneys and experts can use it directly.', 'As Sarah, I want to export negative search results as a printable report showing all search terms, coverage metrics, and near-misses so that I can present thoroughness evidence.', 'As Dr. Wright, I want to copy formatted citations from any entity or search result so that I can paste them into my expert report.', 'As Sarah, I want to generate a case summary report pulling from entities, checklists, and chat findings so that I have a comprehensive case document.', 'As David, I want to export a case evaluation summary with key findings, risk assessment, and cited evidence in a format suitable for insurance carrier reports so that I can deliver a defensible assessment within the required turnaround.'], ux: 'Legal professionals live in Word \u2014 exports must be DOCX. Bates formatting varies by firm. Consider citation clipboard.' },
+  { id: 11, title: 'Administration & Multi-Tenancy', desc: 'Firm-level isolation, user management, RBAC, usage tracking, HIPAA compliance. Most of this epic is regulatory/operational (HIPAA, multi-tenancy, access control) rather than user-job driven. Usage reporting connects to S3; the rest are platform prerequisites for healthcare litigation.', jtbd: ['S3'], stories: ['As a firm administrator, I want to manage user accounts and permissions so that I can control who has access to case data.', 'As a firm administrator, I want usage reporting (cases processed, pages ingested, queries run) so that I can track utilization and justify subscription cost.', 'As Sarah, I want complete data isolation between firms so that case data is never accessible to other tenants.', 'As a firm administrator, I want audit logs of who accessed which case and when so that I can demonstrate HIPAA compliance.'], ux: 'Invisible during normal use. HIPAA compliance is table-stakes, not a differentiator.' },
+  { id: 12, title: 'Clinical Knowledge Layer', desc: 'Clinical ontologies, synonym libraries, standard-of-care templates, concept normalization. The invisible foundation.', jtbd: ['P5'], stories: ['As Sarah, I want searches for a clinical concept to find all relevant documentation regardless of which terminology the provider used (e.g., \u201cdecubitus ulcer,\u201d \u201cpressure injury,\u201d \u201cbedsore,\u201d \u201cpressure ulcer\u201d) so that I don\u2019t miss records due to vocabulary differences.', 'As Dr. Wright, I want standard-of-care templates grounded in current clinical guidelines so that checklist evaluations reflect accepted practice.', 'As Maria, I want document type classification that understands medical record structures (MAR, nursing flow sheet, H&P, operative note) so that records are organized in clinically meaningful categories.', 'As Sarah, I want clinical concept normalization applied to observations so that I can search by concept rather than individual phrases.'], ux: 'Invisible but determines quality of every interaction. Show synonym mappings when relevant in search.' },
+];
+
+const uxPrinciples = [
+  { title: 'Verify, Then Trust', principle: 'Every piece of AI-generated or extracted information must be one click away from its source document. Never present extracted data without a visible path to verification. The source viewer is the trust mechanism.', practice: 'Every entity row, timeline event, chat citation, and search result includes a "Source" link that opens the source viewer with the relevant page and passage highlighted.' },
+  { title: 'Confidence is a First-Class Citizen', principle: 'Users must always know how much to trust what they\u2019re seeing. Confidence is not metadata to hide in a tooltip \u2014 it is core information that affects interpretation.', practice: 'Consistent visual language across all views (green/yellow/red). Confidence is filterable. Exports include confidence context. Low-confidence data is shown but clearly marked.' },
+  { title: 'Absence is a Feature, Not an Error State', principle: 'When a search finds nothing, that is often the most important result. "Not found" screens must be richly informative, not empty states with a sad face icon.', practice: 'Negative search produces a thorough report (synonyms, coverage, near-misses). Checklist "not found" items include evidence. Timeline gaps are visualized.' },
+  { title: 'Support Sustained Deep Work', principle: 'Users spend hours or days in a single case. The interface must support sustained focus: minimize context switches, remember state, provide orientation cues for resuming.', practice: 'Persist filter states and view preferences. "Recently viewed" navigation. Bookmarks/pins for findings. Progress indicators. Don\u2019t reset views on navigation.' },
+  { title: 'Clinical Context Over Technical Presentation', principle: 'Present information in ways that align with how clinicians and legal professionals think, not how the data is stored.', practice: 'Group timeline events by encounter. Lab trends as charts. Medication timelines as bars. Clinical terminology in labels. Clinical document type names.' },
+  { title: 'Progressive Disclosure of Complexity', principle: 'Surface the most common use case by default and let users drill deeper as needed.', practice: 'Default timeline shows all types grouped by date. Filters available but collapsed. Search starts unified. Quality details available but not cluttering main views.' },
+  { title: 'Design for the Courtroom', principle: 'Outputs may be shown to judges, juries, and opposing counsel. Every report, export, and printable view must be professional, precise, and credible.', practice: 'Formal formatting with legal citation style. Methodology descriptions in reports. Clean, print-ready visualizations. Neutral, professional language.' },
+];
+
+const iaPriority = [
+  { name: 'Timeline', desc: 'Primary exploration tool. Most users start here.' },
+  { name: 'Search', desc: 'Primary targeted query tool.' },
+  { name: 'Entities', desc: 'Structured browsing for specific data review.' },
+  { name: 'ThriveChat', desc: 'Synthesis and complex questions.' },
+  { name: 'Checklists', desc: 'Systematic standard-of-care analysis.' },
+  { name: 'Documents', desc: 'Document-level navigation and quality review.' },
+  { name: 'Quality', desc: 'Understanding data reliability.' },
+  { name: 'Notes & Findings', desc: 'Team collaboration artifacts.' },
+  { name: 'Exports', desc: 'Generating outputs.' },
+];
+
+const featureSpecs = [
+  { epic: 1, title: 'Document Ingestion & Processing', status: 'not-started', file: null },
+  { epic: 2, title: 'Structured Entity Extraction', status: 'not-started', file: null },
+  {
+    epic: 3, title: 'Timeline & Chronology', status: 'draft', file: 'features/timeline.md',
+    principles: [
+      { ref: 'P1', name: 'Medical Records Are Legal Evidence', how: 'Every event links to source page. No orphaned claims.' },
+      { ref: 'P2', name: 'What Is Not Documented Did Not Happen', how: 'All events shown, never suppressed. Low-confidence warned, not hidden.' },
+      { ref: 'P3', name: 'Professionals Stake Their Careers on Accuracy', how: 'Confidence indicators, disagreement warnings, coverage gaps.' },
+      { ref: 'P7', name: 'Inaccuracy Causes Irreversible Harm', how: 'Grouping algorithm prioritizes correctness over rendering speed.' },
+    ],
+    jtbd: [
+      { ref: 'J1', name: 'Determine what happened to a patient', how: 'Grouped/flat views, filtering, encounter grouping.' },
+      { ref: 'J1', name: 'Determine what happened to a patient', how: 'Encounter grouping, date coverage gap detection.' },
+      { ref: 'J4', name: 'Confirm extracted information represents source', how: 'Source link with back-navigation on every event.' },
+    ],
+    stories: [
+      { story: 'Chronological timeline of all clinical events', sections: '§2.1, §4', criteria: 'AC-2.1 through AC-4.8.3' },
+      { story: 'Filter by entity type', sections: '§3.1', criteria: 'AC-3.1.1 through AC-3.1.5' },
+      { story: 'Filter by provider and facility', sections: '§3.2, §3.3', criteria: 'AC-3.2.1 through AC-3.2.4' },
+      { story: 'Export with bates citations', sections: '§7', criteria: 'AC-7.1 through AC-7.6' },
+      { story: 'Events grouped by encounter', sections: '§2.1', criteria: 'Grouping algorithm definition' },
+      { story: 'Date coverage gaps highlighted', sections: '§6', criteria: 'AC-6.1 through AC-6.5' },
+    ],
+    personas: [
+      { persona: 'Sarah Chen', stage: 'Orientation (Day 1)', touchpoint: 'Browse timeline at high level', section: '§2.1, §8.1' },
+      { persona: 'Sarah Chen', stage: 'Theory Development (Days 2-5)', touchpoint: 'Filter by observation category', section: '§3.1, §3.4' },
+      { persona: 'Dr. Wright', stage: 'Clinical Review (Hours 2-8)', touchpoint: 'Review entities by category', section: '§3.1' },
+      { persona: 'Maria Rodriguez', stage: 'Indexing (Hours 3-8)', touchpoint: 'Review timeline for accuracy', section: '§5.2, §5.3' },
+      { persona: 'David Kim', stage: 'Rapid Assessment', touchpoint: 'Quick scan, filter, understand care', section: '§3, §2.3' },
+    ],
+    uxAlignment: [
+      { principle: 'Verify, Then Trust', how: 'Every event has "Source" link. Back-navigation preserves context.' },
+      { principle: 'Confidence is First-Class', how: 'Indicators on every event and group. Filterable by threshold.' },
+      { principle: 'Absence is a Feature', how: 'Date coverage gaps visualized. Gap indicators between groups.' },
+      { principle: 'Support Sustained Deep Work', how: 'URL state sync. Filter summary bar.' },
+      { principle: 'Progressive Disclosure', how: 'Default grouped view with expand/collapse. Details on demand.' },
+      { principle: 'Design for the Courtroom', how: 'Export with bates citations. Professional PDF formatting.' },
+    ],
+    priorities: [
+      { priority: 'P0', feature: 'URL state sync', section: 'Sec 3.9', complexity: 'Medium' },
+      { priority: 'P0', feature: 'Filter summary bar + clear all', section: 'Sec 3.7', complexity: 'Low' },
+      { priority: 'P0', feature: 'Date range filter UI', section: 'Sec 3.4', complexity: 'Low' },
+      { priority: 'P0', feature: 'Source link back-navigation', section: 'Sec 4.8', complexity: 'Low' },
+      { priority: 'P1', feature: 'Design system migration', section: 'All', complexity: 'Medium' },
+      { priority: 'P1', feature: 'Low-confidence warnings', section: 'Sec 5.2', complexity: 'Low' },
+      { priority: 'P1', feature: 'Disagreement indicators', section: 'Sec 5.3', complexity: 'Medium' },
+      { priority: 'P1', feature: 'Date coverage gap detection', section: 'Sec 6', complexity: 'Medium' },
+      { priority: 'P1', feature: 'Same-date deduplication', section: 'Sec 4.7', complexity: 'Low' },
+      { priority: 'P2', feature: 'Flat timeline view toggle', section: 'Sec 2.2-2.3', complexity: 'Low' },
+      { priority: 'P2', feature: 'Export filtered PDF with bates', section: 'Sec 7', complexity: 'High' },
+      { priority: 'P2', feature: 'Export CSV', section: 'Sec 7', complexity: 'Medium' },
+      { priority: 'P2', feature: 'Keyword search in timeline', section: 'Sec 3.6', complexity: 'Medium' },
+      { priority: 'P2', feature: 'Jump to date', section: 'Sec 3.8', complexity: 'Low' },
+      { priority: 'P2', feature: 'Large group truncation', section: 'Sec 8.2', complexity: 'Low' },
+      { priority: 'P3', feature: 'Hallucinated date detection', section: 'Sec 9.5', complexity: 'Medium' },
+    ]
+  },
+  { epic: 4, title: 'Multi-Modal Search', status: 'not-started', file: null },
+  { epic: 5, title: 'ThriveChat — Conversational AI', status: 'not-started', file: null },
+  { epic: 6, title: 'Standard-of-Care Checklists', status: 'not-started', file: null },
+  { epic: 7, title: 'Source Verification & Document Viewer', status: 'not-started', file: null },
+  { epic: 8, title: 'Quality & Confidence System', status: 'not-started', file: null },
+  { epic: 9, title: 'Case Management & Collaboration', status: 'not-started', file: null },
+  { epic: 10, title: 'Export & Reporting', status: 'not-started', file: null },
+  { epic: 11, title: 'Administration & Multi-Tenancy', status: 'not-started', file: null },
+  { epic: 12, title: 'Clinical Knowledge Layer', status: 'not-started', file: null },
+];
+
+const metrics = {
+  'm-adoption': {
+    headers: ['Metric', 'Target', 'Signal'],
+    rows: [
+      ['Cases created per firm per month', 'Growing MoM', 'Tool integrated into firm workflow'],
+      ['Return rate (2+ cases)', '>70% in 60 days', 'First-case experience drives repeat use'],
+      ['Pages processed per case', 'Growing toward 5k+', 'Users trust it for large, important cases'],
+      ['Team members per case', '>1.5 average', 'Collaborative adoption, not single-user trial'],
+    ]
+  },
+  'm-engagement': {
+    headers: ['Metric', 'Target', 'Signal'],
+    rows: [
+      ['Session duration', '>30 min average', 'Deep work, not casual browsing'],
+      ['Source viewer clicks per session', 'High and sustained', 'Users verifying = using data for real work'],
+      ['Searches per case', '>10 lifetime', 'Thorough investigation happening'],
+      ['Chat messages per case', '>5 lifetime', 'ThriveChat adds value beyond browse/search'],
+      ['Exports generated per case', '>1 lifetime', 'Product produces outputs used in legal work'],
+    ]
+  },
+  'm-quality': {
+    headers: ['Metric', 'Target', 'Signal'],
+    rows: [
+      ['Entity extraction precision', '>95%', 'Extracted entities are usable'],
+      ['Entity extraction recall', '>90%', 'Not missing entities (worst failure mode)'],
+      ['User-reported extraction errors', '<1 per 1000', 'Real-world accuracy as experienced'],
+      ['Negative search false negative rate', '<5%', '"Not found" results are trustworthy'],
+    ]
+  },
+  'm-outcomes': {
+    headers: ['Metric', 'Target', 'Signal'],
+    rows: [
+      ['Time to first attorney review', '<24 hours', 'Core value proposition delivered'],
+      ['Time saved per case (survey)', '>20 hours', 'Meaningful savings justify cost'],
+      ['Cases influencing strategy', '>60%', 'Producing insights, not just data'],
+      ['NPS among primary users', '>50', 'Strong advocacy'],
+    ]
+  },
+  'm-trust': {
+    headers: ['Metric', 'Target', 'Signal'],
+    rows: [
+      ['Entities spot-checked via source viewer', 'Decreasing per user', 'Trust growing (but never zero)'],
+      ['Cases relying on negative search', 'Increasing over time', 'Users trust absence findings for legal arguments'],
+      ['User-reported misleading output', '<1 per 100 cases', 'No catastrophic trust violations'],
+    ]
+  },
+};
+
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+
+function renderPrinciples() {
+  const grid = document.getElementById('principles-grid');
+  grid.innerHTML = principles.map((p, i) => `
+    <div class="card" id="principle-card-${p.id}" data-index="${i}">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div>
+          <span class="card-id">${p.id}</span>
+          <h3 style="margin-top:8px">${p.title}</h3>
+        </div>
+        <button class="expand-btn">&#9660;</button>
+      </div>
+      <div class="card-body collapsed">
+        <p style="margin:0 0 20px 0;line-height:1.7;color:var(--text-secondary)">${p.body}</p>
+        ${p.reasoning ? '<div style="border-top:1px solid var(--border);padding-top:16px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:600;margin-bottom:12px">Framework Compliance</div><div style="display:flex;flex-direction:column;gap:10px">' + p.reasoning.map(r => '<div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:11px;font-weight:600;color:var(--accent-blue);white-space:nowrap;min-width:120px">' + r.label + '</span><span style="font-size:13px;color:var(--text-muted);line-height:1.5">' + r.text + '</span></div>').join('') + '</div></div>' : ''}
+        ${p.sources ? '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:600;margin-bottom:12px">Sources</div><div style="display:flex;flex-direction:column;gap:8px">' + p.sources.map(s => '<div style="font-size:12px;line-height:1.5"><a href="' + s.url + '" target="_blank" style="color:var(--accent-blue);text-decoration:none">' + s.title + '</a>' + (s.quote ? '<span style="color:var(--text-muted);font-style:italic;margin-left:8px">"' + s.quote + '"</span>' : '') + '</div>').join('') + '</div></div>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderJTBD() {
+  ['functional','emotional','social'].forEach(type => {
+    const container = document.getElementById('jtbd-' + type);
+    const badgeClass = type === 'functional' ? 'badge-blue' : type === 'emotional' ? 'badge-purple' : 'badge-teal';
+    container.innerHTML = '<div class="card-grid">' + jtbd[type].map(j => {
+      const variantsHtml = (j.variants && j.variants.length > 0)
+        ? '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">' +
+          '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:600;margin-bottom:10px">Persona Variants</div>' +
+          j.variants.map(v =>
+            '<div style="padding:10px 0;border-bottom:1px solid rgba(42,46,59,0.5)">' +
+              '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">' +
+                '<span style="font-size:13px;font-weight:600;color:var(--text-primary)">' + v.persona + '</span>' +
+                '<span style="font-size:11px;color:var(--text-muted)">' + (v.role || '') + '</span>' +
+              '</div>' +
+              '<p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin:0 0 6px">' + v.context + '</p>' +
+              '<div style="font-size:12px;color:var(--accent-teal);line-height:1.4"><strong>Success:</strong> ' + v.success + '</div>' +
+            '</div>'
+          ).join('') +
+          '</div>'
+        : '';
+      return `
+      <div class="card" id="jtbd-card-${j.id}">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div>
+            <span class="badge ${badgeClass}">${j.id}</span>
+            <h3 style="margin-top:8px">${j.title}</h3>
+          </div>
+          <button class="expand-btn">&#9660;</button>
+        </div>
+        <div class="card-body collapsed">
+          <p style="margin-bottom:0">${j.body}</p>
+          ${variantsHtml}
+        </div>
+      </div>
+    `}).join('') + '</div>';
+  });
+}
+
+function renderPersonas() {
+  const grid = document.getElementById('personas-grid');
+  grid.innerHTML = personas.map((p, i) => `
+    <div class="persona-card">
+      <div class="persona-header" onclick="togglePersona(this)">
+        <div class="persona-avatar" style="background:${p.bgColor};color:${p.color}">${p.initials}</div>
+        <div class="persona-info">
+          <h3>${p.name}</h3>
+          <div class="role">${p.role}</div>
+          <div style="margin-top:6px">${p.jtbd.map(j => '<span class="badge badge-blue" style="cursor:pointer" onclick="event.stopPropagation();navigateToJTBD(\'' + j + '\')">' + j + '</span>').join('')}</div>
+        </div>
+      </div>
+      <div class="persona-detail">
+        <div class="persona-section"><h4>Context</h4><p>${p.context}</p></div>
+        <div class="persona-section"><h4>Goals</h4><ul>${p.goals.map(g => '<li>' + g + '</li>').join('')}</ul></div>
+        <div class="persona-section"><h4>Frustrations</h4><ul>${p.frustrations.map(f => '<li>' + f + '</li>').join('')}</ul></div>
+        <div class="persona-quote">"${p.quote}"</div>
+        ${p.jobOutcomes ? '<div class="persona-section"><h4>Job Outcomes</h4>' + p.jobOutcomes.map(jo => '<div style="margin-bottom:12px;padding:10px 12px;background:var(--bg-secondary);border-radius:8px;border-left:3px solid ' + p.color + '"><div style="font-weight:600;font-size:13px;margin-bottom:4px"><span class="badge badge-blue" style="margin-right:6px">' + jo.job + '</span>' + jo.label + '</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">' + jo.context + '</div><div style="font-size:12px;color:var(--accent-teal)"><strong>Success:</strong> ' + jo.success + '</div></div>').join('') + '</div>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderJourneys() {
+  Object.entries(journeys).forEach(([key, journey]) => {
+    const container = document.getElementById(key);
+    container.innerHTML = `
+      <h3 style="font-size:16px;margin-bottom:16px;color:var(--text-secondary)">${journey.title}</h3>
+      <div class="journey-timeline">
+        ${journey.stages.map(s => `
+          <div class="journey-stage">
+            <div class="stage-header">${s.name}<div class="stage-time">${s.time}</div></div>
+            <div class="stage-body">
+              <div class="stage-row"><div class="stage-row-label actions">Actions</div><p>${s.actions}</p></div>
+              <div class="stage-row"><div class="stage-row-label touchpoints">Touchpoints</div><p>${s.touchpoints}</p></div>
+              <div class="stage-row"><div class="stage-row-label pain">Pain Points</div><p>${s.pain}</p></div>
+              <div class="stage-row"><div class="stage-row-label opportunities">Opportunities</div><p>${s.opportunities}</p></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
+}
+
+function renderEpics() {
+  const grid = document.getElementById('epics-grid');
+  const specLookup = {};
+  featureSpecs.forEach(s => { if (s.file) specLookup[s.epic] = s; });
+
+  grid.innerHTML = epics.map(e => {
+    const spec = specLookup[e.id];
+    return `
+    <div class="epic-card" onclick="navigateToEpic(${e.id})" style="cursor:pointer">
+      <div class="epic-header">
+        <div class="epic-header-left">
+          <div style="margin-bottom:8px">
+            <span class="badge badge-amber">Epic ${e.id}</span>
+            ${spec ? '<span class="spec-status ' + spec.status + '" style="margin-left:6px">' + spec.status + '</span>' : ''}
+          </div>
+          <h3>${e.title}</h3>
+          <p>${e.desc}</p>
+        </div>
+        <span style="color:var(--text-muted);font-size:18px">&rsaquo;</span>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function renderUXPrinciples() {
+  const grid = document.getElementById('ux-grid');
+  grid.innerHTML = uxPrinciples.map((p, i) => `
+    <div class="ux-card">
+      <h3><span style="color:var(--accent-teal);margin-right:8px">${i+1}.</span>${p.title}</h3>
+      <div class="principle">${p.principle}</div>
+      <div class="practice"><strong>In practice:</strong> ${p.practice}</div>
+    </div>
+  `).join('');
+}
+
+function renderIAPriority() {
+  const list = document.getElementById('ia-priority');
+  list.innerHTML = iaPriority.map((p, i) => `
+    <div class="priority-item">
+      <div class="priority-rank">${i+1}</div>
+      <span class="name">${p.name}</span>
+      <span class="desc">${p.desc}</span>
+    </div>
+  `).join('');
+}
+
+// Epic detail page navigation
+function navigateToEpic(epicId) {
+  const epic = epics.find(e => e.id === epicId);
+  if (!epic) return;
+
+  const spec = featureSpecs.find(s => s.epic === epicId);
+
+  // Build JTBD lookup
+  const allJtbd = {};
+  [...jtbd.functional, ...jtbd.emotional, ...jtbd.social].forEach(j => { allJtbd[j.id] = j; });
+  principles.forEach(p => { allJtbd[p.id] = { id: p.id, title: p.title, body: p.body }; });
+
+  // Build spec JTBD "how addressed" lookup
+  const specJtbdHow = {};
+  if (spec && spec.jtbd) {
+    spec.jtbd.forEach(j => { specJtbdHow[j.ref] = j.how; });
+  }
+
+  // Merge epic JTBD refs with spec-only refs
+  const epicJtbdIds = [...epic.jtbd];
+  if (spec && spec.jtbd) {
+    spec.jtbd.forEach(j => {
+      if (!epicJtbdIds.includes(j.ref)) epicJtbdIds.push(j.ref);
+    });
+  }
+
+  // Build JTBD cards
+  const jtbdHtml = epicJtbdIds.map(jId => {
+    const job = allJtbd[jId];
+    if (!job) return '';
+    const how = specJtbdHow[jId];
+    const variants = job.variants || [];
+
+    const variantsHtml = variants.map(v => {
+      if (!v.success) {
+        return '<div class="persona-variant"><div class="persona-variant-header"><span class="persona-variant-name">' + v.persona + '</span><span class="persona-variant-role">' + (v.role || '') + '</span></div><div class="persona-variant-na">' + v.context + '</div></div>';
+      }
+      return '<div class="persona-variant">' +
+        '<div class="persona-variant-header"><span class="persona-variant-name">' + v.persona + '</span><span class="persona-variant-role">' + (v.role || '') + '</span></div>' +
+        '<div class="persona-variant-context">' + v.context + '</div>' +
+        '<div class="persona-variant-success"><strong>Success:</strong> ' + v.success + '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="jtbd-card">' +
+      '<div class="jtbd-card-header">' +
+        '<span class="badge badge-blue" style="cursor:pointer" onclick="event.stopPropagation();navigateBackToEpics();navigateToJTBD(\'' + jId + '\')">' + jId + '</span>' +
+        '<span class="jtbd-card-title">' + job.title + '</span>' +
+      '</div>' +
+      '<div class="jtbd-card-body">' + job.body + '</div>' +
+      (how ? '<div class="jtbd-how-addressed"><strong>How addressed:</strong> ' + how + '</div>' : '') +
+      variantsHtml +
+    '</div>';
+  }).join('');
+
+  // Build stories
+  const storiesHtml = '<ul class="story-list-detail">' + epic.stories.map(s => '<li>' + s + '</li>').join('') + '</ul>';
+
+  // Build spec section
+  let specHtml = '';
+  if (spec && spec.file) {
+    specHtml = '<div class="epic-detail-section"><div class="epic-detail-section-header">Feature Specification</div>' +
+      '<div class="spec-section">' +
+        '<div class="spec-section-header">' +
+          '<span class="spec-section-title">' + spec.file + '</span>' +
+          '<span class="spec-status ' + spec.status + '">' + spec.status + '</span>' +
+        '</div>' +
+        '<div class="spec-detail-tabs" id="spec-tabs-' + epicId + '">' +
+          '<button class="spec-detail-tab active" data-spectab="spec-' + epicId + '-principles">First Principles</button>' +
+          '<button class="spec-detail-tab" data-spectab="spec-' + epicId + '-stories">Story Coverage</button>' +
+          '<button class="spec-detail-tab" data-spectab="spec-' + epicId + '-personas">Personas</button>' +
+          '<button class="spec-detail-tab" data-spectab="spec-' + epicId + '-ux">UX Alignment</button>' +
+          '<button class="spec-detail-tab" data-spectab="spec-' + epicId + '-priority">Priority</button>' +
+        '</div>' +
+        '<div id="spec-' + epicId + '-principles" class="spec-detail-content active">' +
+          '<table class="trace-table"><thead><tr><th>First Principle</th><th>How Addressed</th></tr></thead><tbody>' +
+          (spec.principles||[]).map(p => '<tr><td><span class="badge badge-blue" style="cursor:pointer" onclick="navigateBackToEpics();navigateToPrinciple(\'' + p.ref + '\')">' + p.ref + '</span> ' + p.name + '</td><td>' + p.how + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+        '<div id="spec-' + epicId + '-stories" class="spec-detail-content">' +
+          '<table class="trace-table"><thead><tr><th>User Story</th><th>Acceptance Criteria</th></tr></thead><tbody>' +
+          (spec.stories||[]).map(st => '<tr><td>' + st.story + '</td><td style="font-size:12px;color:var(--text-muted)">' + st.criteria + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+        '<div id="spec-' + epicId + '-personas" class="spec-detail-content">' +
+          '<table class="trace-table"><thead><tr><th>Persona</th><th>Journey Stage</th><th>Touchpoint</th></tr></thead><tbody>' +
+          (spec.personas||[]).map(p => '<tr><td style="font-weight:600;color:var(--text-primary)">' + p.persona + '</td><td>' + p.stage + '</td><td>' + p.touchpoint + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+        '<div id="spec-' + epicId + '-ux" class="spec-detail-content">' +
+          '<table class="trace-table"><thead><tr><th>UX Principle</th><th>Implementation</th></tr></thead><tbody>' +
+          (spec.uxAlignment||[]).map(u => '<tr><td style="font-weight:600;color:var(--text-primary)">' + u.principle + '</td><td>' + u.how + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+        '<div id="spec-' + epicId + '-priority" class="spec-detail-content">' +
+          '<table class="trace-table"><thead><tr><th>Priority</th><th>Feature</th><th>Section</th><th>Complexity</th></tr></thead><tbody>' +
+          (spec.priorities||[]).map(p => '<tr><td><span class="priority-badge ' + p.priority.toLowerCase() + '">' + p.priority + '</span></td><td>' + p.feature + '</td><td style="white-space:nowrap">' + p.section + '</td><td>' + p.complexity + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+      '</div></div>';
+  }
+
+  // Render the detail page
+  const page = document.getElementById('epic-detail-page');
+  page.innerHTML =
+    '<button class="epic-detail-back" onclick="navigateBackToEpics()">&larr; Back to Epics</button>' +
+    '<div style="margin-bottom:24px"><span class="badge badge-amber">Epic ' + epic.id + '</span>' +
+    (spec ? ' <span class="spec-status ' + spec.status + '">' + spec.status + '</span>' : '') + '</div>' +
+    '<h1>' + epic.title + '</h1>' +
+    '<div class="epic-description">' + epic.desc + '</div>' +
+    '<div class="epic-detail-section"><div class="epic-detail-section-header">Jobs to Be Done (' + epicJtbdIds.length + ')</div>' + jtbdHtml + '</div>' +
+    '<div class="epic-detail-section"><div class="epic-detail-section-header">User Stories (' + epic.stories.length + ')</div>' + storiesHtml + '</div>' +
+    '<div class="epic-detail-section"><div class="epic-detail-section-header">UX Considerations</div><div class="ux-note-detail">' + epic.ux + '</div></div>' +
+    specHtml;
+
+  // Hide all main content (hero + all sections), show the detail page
+  document.querySelector('.hero').style.display = 'none';
+  document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
+  page.classList.add('active');
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Update sidebar to highlight Epics
+  document.querySelectorAll('.sidebar nav a').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#epics') link.classList.add('active');
+  });
+
+  // Push state for back button
+  history.pushState({ epicId: epicId }, '', '#epic-' + epicId);
+}
+
+function navigateBackToEpics() {
+  document.getElementById('epic-detail-page').classList.remove('active');
+  document.getElementById('epic-detail-page').innerHTML = '';
+
+  // Restore all main content
+  document.querySelector('.hero').style.display = '';
+  document.querySelectorAll('main > section').forEach(s => s.style.display = '');
+
+  // Scroll to epics section
+  document.getElementById('epics').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Replace state to remove epic hash
+  history.replaceState(null, '', window.location.pathname);
+}
+
+// Spec detail tab switching
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('spec-detail-tab')) return;
+  const tabGroup = e.target.parentElement;
+  const tabId = e.target.getAttribute('data-spectab');
+
+  tabGroup.querySelectorAll('.spec-detail-tab').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+
+  // Find the parent spec section and toggle content
+  const specSection = tabGroup.parentElement;
+  specSection.querySelectorAll('.spec-detail-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+});
+
+// Handle browser back button
+window.addEventListener('popstate', function(e) {
+  if (e.state && e.state.epicId) {
+    navigateToEpic(e.state.epicId);
+  } else {
+    // Back to epics grid
+    const detailPage = document.getElementById('epic-detail-page');
+    if (detailPage.classList.contains('active')) {
+      navigateBackToEpics();
+    }
+  }
+});
+
+// Handle direct URL with epic hash on page load
+function checkEpicHash() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#epic-')) {
+    const epicId = parseInt(hash.replace('#epic-', ''));
+    if (epicId && epics.find(e => e.id === epicId)) {
+      setTimeout(() => navigateToEpic(epicId), 100);
+    }
+  }
+}
+
+function renderMetrics() {
+  Object.entries(metrics).forEach(([key, data]) => {
+    const container = document.getElementById(key);
+    container.innerHTML = `
+      <table class="metrics-table">
+        <thead><tr>${data.headers.map(h => '<th>' + h + '</th>').join('')}</tr></thead>
+        <tbody>${data.rows.map(row => '<tr>' + row.map(cell => '<td>' + cell + '</td>').join('') + '</tr>').join('')}</tbody>
+      </table>
+    `;
+  });
+}
+
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const btn = header.querySelector('.expand-btn');
+  body.classList.toggle('collapsed');
+  btn.classList.toggle('expanded');
+}
+
+function togglePersona(header) {
+  const detail = header.nextElementSibling;
+  detail.classList.toggle('open');
+}
+
+function navigateToPrinciple(id) {
+  const card = document.getElementById('principle-card-' + id);
+  if (card) {
+    const body = card.querySelector('.card-body');
+    const btn = card.querySelector('.expand-btn');
+    if (body.classList.contains('collapsed')) {
+      body.classList.remove('collapsed');
+      btn.classList.add('expanded');
+    }
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.borderColor = 'var(--accent-blue)';
+    setTimeout(() => { card.style.borderColor = ''; }, 2000);
+  }
+}
+
+function navigateToJTBD(id) {
+  // Determine which tab: F/E/S prefix
+  const prefix = id.charAt(0);
+  const tabName = (prefix === 'F' || prefix === 'J') ? 'functional' : prefix === 'E' ? 'emotional' : 'social';
+  const contentId = 'jtbd-' + tabName;
+
+  // Activate the correct tab
+  const tabGroup = document.getElementById('jtbd-tabs');
+  tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabGroup.querySelector('[data-tab="' + contentId + '"]').classList.add('active');
+
+  // Show the correct tab content
+  const section = tabGroup.parentElement;
+  section.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById(contentId).classList.add('active');
+
+  // Find and expand the card
+  const card = document.getElementById('jtbd-card-' + id);
+  if (card) {
+    const body = card.querySelector('.card-body');
+    const btn = card.querySelector('.expand-btn');
+    if (body.classList.contains('collapsed')) {
+      body.classList.remove('collapsed');
+      btn.classList.add('expanded');
+    }
+    // Scroll to it
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Brief highlight
+    card.style.borderColor = 'var(--accent-blue)';
+    setTimeout(() => { card.style.borderColor = ''; }, 2000);
+  }
+}
+
+// Tab switching
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('tab')) return;
+  const tabGroup = e.target.parentElement;
+  const tabId = e.target.getAttribute('data-tab');
+
+  tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+
+  // Find sibling tab-content elements
+  const section = tabGroup.parentElement;
+  section.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+});
+
+// Active nav on scroll
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const sections = document.querySelectorAll('section');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top <= 100) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+// Smooth scroll (also handles returning from epic detail page)
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    // If on epic detail page, navigate back first
+    const detailPage = document.getElementById('epic-detail-page');
+    if (detailPage.classList.contains('active')) {
+      navigateBackToEpics();
+    }
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+  });
+});
+
+
+// ============================================================
+// INIT
+// ============================================================
+renderPrinciples();
+renderJTBD();
+renderPersonas();
+renderJourneys();
+renderEpics();
+renderUXPrinciples();
+renderIAPriority();
+renderMetrics();
+updateActiveNav();
+checkEpicHash();
+</script>
+</body>
+</html>
