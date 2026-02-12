@@ -657,7 +657,6 @@
           <li>&bull; Total AWS bill: $2,514.42 <span style="color:var(--text-muted);">(Cost Explorer)</span></li>
           <li>&bull; Textract charges: $2,276.17 <span style="color:var(--text-muted);">(Cost Explorer)</span></li>
           <li>&bull; Daily breakdown: Feb 1&ndash;11 <span style="color:var(--text-muted);">(Cost Explorer)</span></li>
-          <li>&bull; S3 bucket: 176 objects / 5.0 GB &mdash; <strong style="color:var(--accent-teal);">cleaned</strong> <span style="color:var(--text-muted);">(aws s3 ls &rarr; aws s3 rm)</span></li>
           <li>&bull; Textract pricing: $0.0685/pg combined <span style="color:var(--text-muted);">(AWS pricing page)</span></li>
           <li>&bull; Cost constant was $0.005 (14x wrong) <span style="color:var(--text-muted);">(git log)</span></li>
           <li>&bull; Run counts (7 Sanchez, 4 Ingram) <span style="color:var(--text-muted);">(pipeline logs)</span></li>
@@ -1467,25 +1466,20 @@
     <div class="section-header">
       <h2>Immediate Next Steps</h2>
     </div>
-    <div class="action-item" style="border-left-color:var(--accent-teal);opacity:0.7;">
-      <h4>1. Clean up Textract input bucket <span class="badge badge-teal">Done</span></h4>
-      <p><s>176 objects / 5.0 GB in <code>s3://thriveai-textract-input/</code> from old runs.</s> Deleted Feb 11, 2026. Bucket is now empty.</p>
-      <p style="margin-top:8px;"><a href="https://us-east-1.console.aws.amazon.com/s3/buckets/thriveai-textract-input?region=us-east-1&tab=objects" target="_blank" style="color:var(--accent-blue);text-decoration:underline;font-size:13px;">View bucket in AWS Console &rarr;</a></p>
-    </div>
     <div class="action-item" style="border-left-color:var(--accent-teal);">
-      <h4>2. Implement Textract caching (1-2 days)</h4>
+      <h4>1. Implement Textract caching (1-2 days)</h4>
       <p>SHA-256 hash per document &rarr; S3 cache lookup before Textract &rarr; cache store after. Stage-level resume for failed jobs.</p>
     </div>
     <div class="action-item" style="border-left-color:var(--accent-teal);">
-      <h4>3. Add cost estimation + confirmation + budget alarm</h4>
+      <h4>2. Add cost estimation + confirmation + budget alarm</h4>
       <p>Show estimated cost before extraction. Require confirmation above $50. CloudWatch alarm at $100/day Textract spend.</p>
     </div>
     <div class="action-item" style="border-left-color:var(--accent-amber);">
-      <h4>4. Build page-level triage (Phase 2)</h4>
+      <h4>3. Build page-level triage (Phase 2)</h4>
       <p>DetectDocumentText pass &rarr; rule-based page classifier &rarr; targeted AnalyzeDocument. Validate on test cases before production.</p>
     </div>
     <div class="action-item" style="border-left-color:var(--accent-purple);">
-      <h4>5. Design Claude Vision accuracy benchmark (Phase 3)</h4>
+      <h4>4. Design Claude Vision accuracy benchmark (Phase 3)</h4>
       <p>Cell-by-cell table comparison, field-by-field form comparison. Zero tolerance for hallucinated values. Run on real medical records.</p>
     </div>
 
