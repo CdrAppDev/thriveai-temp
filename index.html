@@ -605,18 +605,6 @@
     <a href="#features" onclick="scrollTo(event,'features')"><span class="nav-icon">&#128269;</span> Feature Analysis</a>
     <a href="#insight" onclick="scrollTo(event,'insight')"><span class="nav-icon">&#127919;</span> Core Insight</a>
   </nav>
-  <div class="sidebar-section-label">Solution</div>
-  <nav>
-    <a href="#triage" onclick="scrollTo(event,'triage')"><span class="nav-icon">&#128736;</span> Page Triage</a>
-    <a href="#preserved" onclick="scrollTo(event,'preserved')"><span class="nav-icon">&#9989;</span> Principles Check</a>
-    <a href="#phase1cache" onclick="scrollTo(event,'phase1cache')"><span class="nav-icon">&#128190;</span> Phase 1: Caching</a>
-    <a href="#phase1guard" onclick="scrollTo(event,'phase1guard')"><span class="nav-icon">&#128737;</span> Phase 1: Guardrails</a>
-    <a href="#phase2" onclick="scrollTo(event,'phase2')"><span class="nav-icon">&#9874;</span> Phase 2: Selective</a>
-    <a href="#phase3" onclick="scrollTo(event,'phase3')"><span class="nav-icon">&#128065;</span> Phase 3: Vision</a>
-    <a href="#alternatives" onclick="scrollTo(event,'alternatives')"><span class="nav-icon">&#9729;</span> Alternatives</a>
-    <a href="#impact" onclick="scrollTo(event,'impact')"><span class="nav-icon">&#128200;</span> Impact</a>
-    <a href="#nextsteps" onclick="scrollTo(event,'nextsteps')"><span class="nav-icon">&#128640;</span> Next Steps</a>
-  </nav>
 </div>
 
 <!-- Main Content -->
@@ -627,9 +615,8 @@
     <h1>AWS Cost Root Cause Analysis</h1>
     <div class="subtitle">ThriveAI Extraction Pipeline</div>
     <div class="description">
-      February 2026 AWS bill investigation &mdash; tracing $2,514 in charges to root causes,
-      analyzing per-page extraction costs, and designing a first-principles approach to cost reduction
-      that preserves deterministic accuracy.
+      February 2026 AWS bill investigation &mdash; tracing $2,514 in charges to three root causes
+      and analyzing the per-page extraction cost structure.
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -641,8 +628,8 @@
         <div class="label">Amazon Textract</div>
       </div>
       <div class="hero-stat">
-        <div class="value" style="color:var(--accent-teal);">57%</div>
-        <div class="label">Projected Reduction</div>
+        <div class="value" style="color:var(--accent-rose);">$0.0685</div>
+        <div class="label">Per Page (all features)</div>
       </div>
     </div>
   </div>
@@ -663,13 +650,10 @@
         </ul>
       </div>
       <div>
-        <p style="font-size:12px;font-weight:600;color:var(--accent-amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Estimates &amp; Assumptions <span class="badge badge-amber">Projected</span></p>
+        <p style="font-size:12px;font-weight:600;color:var(--accent-amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Estimates <span class="badge badge-amber">Est.</span></p>
         <ul style="font-size:13px;color:var(--text-secondary);list-style:none;padding:0;line-height:2;">
           <li>&bull; Claude per-page costs ($0.012, $0.003) <span style="color:var(--text-muted);">(token-usage heuristic)</span></li>
-          <li>&bull; Page-type distribution (50/20/15/10/5%) <span style="color:var(--text-muted);">(not yet measured)</span></li>
-          <li>&bull; ~57% cost reduction <span style="color:var(--text-muted);">(depends on distribution)</span></li>
-          <li>&bull; ~15% of pages contain forms <span style="color:var(--text-muted);">(not yet measured)</span></li>
-          <li>&bull; Caching savings ~$1,531 <span style="color:var(--text-muted);">(from unique-page estimate)</span></li>
+          <li>&bull; Per-run cost for Sanchez/Ingram <span style="color:var(--text-muted);">(pages &times; $0.0685)</span></li>
         </ul>
       </div>
     </div>
@@ -1118,397 +1102,6 @@
     </div>
   </section>
 
-  <!-- Section 11: Page-Level Triage -->
-  <section id="triage">
-    <div class="section-number">Section 11</div>
-    <div class="section-header">
-      <h2>The Approach: Page-Level Triage</h2>
-      <p>Two-pass Textract &mdash; cheap classification first, targeted features second.</p>
-    </div>
-    <div class="step-flow">
-      <div class="step-box" style="background:rgba(20,83,45,0.25);border-color:rgba(22,163,74,0.3);">
-        <h4 style="color:var(--accent-teal);">Pass 1</h4>
-        <p>DetectDocumentText<br/>on ALL pages</p>
-        <div class="cost" style="color:var(--accent-teal);">$0.0015/pg</div>
-      </div>
-      <div class="step-arrow">&rarr;</div>
-      <div class="step-box" style="background:rgba(30,58,95,0.25);border-color:rgba(59,130,246,0.3);">
-        <h4 style="color:var(--accent-blue);">Classify</h4>
-        <p>Rule-based page triage<br/>on OCR text patterns</p>
-        <div class="cost" style="color:var(--accent-blue);">Free</div>
-      </div>
-      <div class="step-arrow">&rarr;</div>
-      <div class="step-box" style="background:rgba(127,29,29,0.25);border-color:rgba(239,68,68,0.3);">
-        <h4 style="color:var(--accent-amber);">Pass 2</h4>
-        <p>AnalyzeDocument with<br/>targeted features per page</p>
-        <div class="cost" style="color:var(--accent-amber);">$0.015&ndash;$0.065/pg</div>
-      </div>
-    </div>
-    <table class="metrics-table">
-      <thead><tr><th>Page Type</th><th>~% of Pages <span class="badge badge-amber">Assumed</span></th><th>Pass 1</th><th>Pass 2 Features</th><th>Total Cost/pg</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Narrative text</td><td>~50%</td><td>$0.0015</td>
-          <td style="color:var(--accent-teal);">None needed</td>
-          <td style="color:var(--accent-teal);font-weight:600;">$0.0015</td>
-        </tr>
-        <tr>
-          <td>Tables (labs, vitals, meds)</td><td>~20%</td><td>$0.0015</td>
-          <td>Tables + Layout</td><td>$0.0165</td>
-        </tr>
-        <tr>
-          <td>Forms (intake, consent)</td><td>~15%</td><td>$0.0015</td>
-          <td>Forms</td>
-          <td style="color:var(--accent-amber);">$0.0515</td>
-        </tr>
-        <tr>
-          <td>Mixed (tables + forms)</td><td>~10%</td><td>$0.0015</td>
-          <td>Tables + Forms</td><td>$0.0665</td>
-        </tr>
-        <tr>
-          <td>Other (sigs, images)</td><td>~5%</td><td>$0.0015</td>
-          <td style="color:var(--accent-teal);">None needed</td>
-          <td style="color:var(--accent-teal);font-weight:600;">$0.0015</td>
-        </tr>
-        <tr style="background:var(--bg-secondary);">
-          <td colspan="4"><strong>Weighted average</strong></td>
-          <td style="color:var(--accent-teal);font-weight:700;">~$0.019/pg <span class="badge badge-amber">Projected</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Section 12: Principles Preserved -->
-  <section id="preserved">
-    <div class="section-number">Section 12</div>
-    <div class="section-header">
-      <h2>Why This Preserves First Principles</h2>
-    </div>
-    <div class="card" style="border-left:4px solid var(--accent-teal);margin-bottom:16px;">
-      <h3>Trust but Verify &mdash; Fully preserved</h3>
-      <p>Every page with structured data (tables, forms) still gets <strong>deterministic Textract extraction</strong>. No Claude hallucination risk on extracted values. Citations still link to source pages. The trust chain is unchanged.</p>
-    </div>
-    <div class="card" style="border-left:4px solid var(--accent-teal);margin-bottom:16px;">
-      <h3>Big Picture Summaries &mdash; Fully preserved</h3>
-      <p>Summaries are generated from items, which are built from segments. Table/form data quality is identical. Narrative quality is identical.</p>
-    </div>
-    <div class="card" style="border-left:4px solid var(--accent-teal);margin-bottom:16px;">
-      <h3>Needle in the Haystack &mdash; Fully preserved</h3>
-      <p>All text is searchable (DetectDocumentText covers 100% of pages). Structured fields from tables/forms are still Textract-extracted. AG-Grid filtering works identically.</p>
-    </div>
-    <div class="card" style="border-left:4px solid var(--accent-teal);">
-      <h3>No Hallucination &mdash; Fully preserved</h3>
-      <p>Textract remains the source of truth for structured data. Claude only classifies and summarizes &mdash; it does not extract form/table values. <strong>Deterministic in, deterministic out.</strong></p>
-    </div>
-  </section>
-
-  <!-- Section 13: Phase 1 Caching -->
-  <section id="phase1cache">
-    <div class="section-number">Section 13</div>
-    <div class="section-header">
-      <h2><span class="phase-badge p1">Phase 1</span> Textract Result Caching</h2>
-      <p>Prevents the exact problem that caused this bill. Zero accuracy impact.</p>
-    </div>
-    <div class="two-col">
-      <div>
-        <div class="card">
-          <h3>How it works</h3>
-          <ul>
-            <li><strong>Hash each document</strong> (SHA-256 of file content)</li>
-            <li><strong>Cache Textract JSON</strong> in S3 alongside source docs</li>
-            <li><strong>Before Textract:</strong> check cache by hash &mdash; skip if exists</li>
-            <li><strong>Textract is deterministic</strong> &mdash; same input = same output, always</li>
-            <li><strong>Stage-level resume:</strong> if CLASSIFY fails, restart from cached Textract without resubmitting</li>
-          </ul>
-        </div>
-      </div>
-      <div>
-        <div class="callout" style="margin-top:0;">
-          <strong>Impact on Feb 11 ($2,056 Textract):</strong><br/><br/>
-          Without caching: 11 repeated runs = <strong style="color:var(--accent-rose);">$2,056</strong> <span class="badge badge-blue">Verified</span><br/><br/>
-          With caching: unique pages only (1,163 + 6,495 = 7,658) = <strong style="color:var(--accent-teal);">~$525</strong> <span class="badge badge-amber">Est.</span><br/><br/>
-          <strong style="color:var(--accent-teal);">Estimated savings: ~$1,531 (74%)</strong>
-        </div>
-        <div class="callout warn">
-          <strong>Effort:</strong> Low (1-2 days). Hash lookup before Textract submission + S3 cache store.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 14: Phase 1 Guardrails -->
-  <section id="phase1guard">
-    <div class="section-number">Section 14</div>
-    <div class="section-header">
-      <h2><span class="phase-badge p1">Phase 1</span> Cost Guardrails</h2>
-      <p>Make costs visible before they are incurred. Prevent silent accumulation.</p>
-    </div>
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Pre-extraction estimate</h3>
-        <div class="card" style="padding:20px;">
-          <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Before clicking "Start Extraction":</p>
-          <div style="font-size:14px;line-height:2;">
-            Documents: <strong>4 files</strong><br/>
-            Estimated pages: <strong>1,163</strong><br/>
-            Estimated Textract cost: <strong style="color:var(--accent-amber);">$75.60</strong><br/>
-            Estimated Claude cost: <strong>$13.96</strong><br/>
-            <span style="border-top:1px solid var(--border);display:block;margin-top:8px;padding-top:8px;">
-              Total estimate: <strong style="color:var(--accent-rose);">$89.56</strong>
-            </span>
-          </div>
-          <div style="margin-top:16px;display:flex;gap:8px;">
-            <span style="background:var(--accent-teal);color:#000;padding:6px 20px;border-radius:8px;font-size:13px;font-weight:600;">Proceed</span>
-            <span style="background:var(--bg-secondary);color:var(--text-muted);padding:6px 20px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border);">Cancel</span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">AWS Budget alarm</h3>
-        <div class="card">
-          <ul>
-            <li><strong>CloudWatch billing alarm</strong> at $100/day for Textract</li>
-            <li><strong>SNS notification</strong> to team when threshold breached</li>
-            <li><strong>Require confirmation</strong> for jobs estimated above $50</li>
-            <li><strong>Daily cost digest</strong> in admin dashboard</li>
-          </ul>
-        </div>
-        <div class="callout" style="margin-top:12px;">
-          If this had been in place: the $2,056 Feb 11 charge (verified via AWS Cost Explorer) would have triggered an alarm after the <strong>first $100</strong> &mdash; by the 2nd run, not the 11th.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 15: Phase 2 -->
-  <section id="phase2">
-    <div class="section-number">Section 15</div>
-    <div class="section-header">
-      <h2><span class="phase-badge p2">Phase 2</span> Selective Feature Processing</h2>
-      <p>Keep Textract's deterministic extraction &mdash; just stop paying for it on pages that don't need it.</p>
-    </div>
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Page classification rules</h3>
-        <div class="card">
-          <ul>
-            <li><strong>Tables:</strong> Detect grid patterns, column alignment, repeated delimiters in OCR text</li>
-            <li><strong>Forms:</strong> Detect "key: value" patterns, checkboxes, labeled fields</li>
-            <li><strong>Both:</strong> Pages matching both patterns get both features</li>
-            <li><strong>Neither:</strong> Progress notes, narrative, signatures &mdash; OCR text is sufficient</li>
-          </ul>
-        </div>
-        <div class="callout">
-          Classification is <strong>rule-based on OCR text</strong>, not AI. No hallucination risk in the triage step.
-        </div>
-      </div>
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Projected cost impact (35,000-page case) <span class="badge badge-amber">Projected</span></h3>
-        <table class="metrics-table">
-          <thead><tr><th>Component</th><th>Current</th><th>Selective</th></tr></thead>
-          <tbody>
-            <tr><td>Textract OCR</td><td style="color:var(--accent-rose);">$2,398</td><td style="color:var(--accent-teal);">~$665</td></tr>
-            <tr><td>Claude (classify + summarize)</td><td>~$630</td><td>~$630</td></tr>
-            <tr style="background:var(--bg-secondary);"><td><strong>Total</strong></td><td style="color:var(--accent-rose);">~$3,028</td><td style="color:var(--accent-teal);font-weight:700;">~$1,295</td></tr>
-          </tbody>
-        </table>
-        <div class="callout warn" style="margin-top:12px;font-size:13px;">
-          Selective feature cost depends on actual page-type distribution, which has not yet been measured on real medical records. The ~50/20/15/10/5% distribution above is an assumption.
-        </div>
-        <div class="stat-grid" style="grid-template-columns:1fr;">
-          <div class="stat-card teal">
-            <div class="value">~57%</div>
-            <div class="label">Projected reduction (depends on page distribution)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 16: Phase 3 -->
-  <section id="phase3">
-    <div class="section-number">Section 16</div>
-    <div class="section-header">
-      <h2><span class="phase-badge p3">Phase 3</span> Evaluate Claude Vision</h2>
-      <p>Can Claude match Textract's deterministic accuracy? This must be proven, not assumed.</p>
-    </div>
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">The validation protocol</h3>
-        <div class="card">
-          <ul>
-            <li><strong>Cell-by-cell comparison</strong> on table pages: every lab value, every vital sign, every medication dose</li>
-            <li><strong>Field-by-field comparison</strong> on form pages: every key-value pair matched exactly</li>
-            <li><strong>Zero tolerance</strong> for hallucinated values &mdash; one fabricated lab result disqualifies the approach</li>
-            <li><strong>Run on real cases</strong> &mdash; not synthetic test data</li>
-          </ul>
-        </div>
-        <div class="callout danger">
-          <strong>Only if Claude Vision passes this bar</strong> do we consider replacing Textract for structured extraction. The attorney test: would you stake a case on it?
-        </div>
-      </div>
-      <div>
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">If validated: potential impact</h3>
-        <table class="metrics-table">
-          <thead><tr><th>Model</th><th>Per Page</th><th>35K Case</th></tr></thead>
-          <tbody>
-            <tr><td>Claude Haiku 4.5</td><td>$0.006</td><td style="color:var(--accent-teal);">$210</td></tr>
-            <tr><td>Claude Sonnet 4.5</td><td>$0.017</td><td>$595</td></tr>
-            <tr><td>Haiku + Batch API</td><td>$0.003</td><td style="color:var(--accent-teal);">$105</td></tr>
-          </tbody>
-        </table>
-        <div class="callout warn">
-          <strong>This is Phase 3 for a reason.</strong> Phases 1-2 deliver projected ~57% savings with zero risk. Phase 3 is high-reward but requires rigorous validation before adoption.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 17: Alternatives -->
-  <section id="alternatives">
-    <div class="section-number">Section 17</div>
-    <div class="section-header">
-      <h2>Cloud OCR Alternatives (Reference)</h2>
-      <p>For context: comparable deterministic OCR services from other cloud providers.</p>
-    </div>
-    <table class="metrics-table">
-      <thead>
-        <tr><th>Provider</th><th>OCR Only</th><th>Tables+Forms</th><th>Combined/pg</th><th>35K Pages</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="color:var(--accent-rose);font-weight:600;">AWS Textract (current, all pages)</td>
-          <td>$0.0015</td><td>$0.065</td>
-          <td style="color:var(--accent-rose);">$0.0685</td>
-          <td style="color:var(--accent-rose);">$2,398</td>
-        </tr>
-        <tr>
-          <td style="color:var(--accent-amber);font-weight:600;">AWS Textract (selective features)</td>
-          <td>$0.0015</td><td>targeted</td>
-          <td style="color:var(--accent-amber);">~$0.019 avg</td>
-          <td style="color:var(--accent-amber);">~$665</td>
-        </tr>
-        <tr>
-          <td>Google Document AI</td>
-          <td>$0.0015</td><td>$0.030</td>
-          <td>$0.0315</td><td>$1,103</td>
-        </tr>
-        <tr>
-          <td>Azure Document Intelligence</td>
-          <td>$0.0015</td><td>$0.030</td>
-          <td>$0.0315</td><td>$1,103</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="callout">
-      Selective features within AWS Textract is <strong>cheaper than switching to Google or Azure</strong>, with no migration cost. Google/Azure remain options for future evaluation.
-    </div>
-  </section>
-
-  <!-- Section 18: Projected Impact -->
-  <section id="impact">
-    <div class="section-number">Section 18</div>
-    <div class="section-header">
-      <h2>Projected Impact</h2>
-      <p>Cost per 35,000-page case at each phase.</p>
-    </div>
-    <div style="margin:24px 0;">
-      <div class="bar-row header">
-        <div>Phase</div>
-        <div>Per Page</div>
-        <div>35K Page Cost</div>
-        <div></div>
-      </div>
-      <div class="bar-row">
-        <div style="color:var(--accent-rose);font-weight:600;">Current</div>
-        <div>~$0.087</div>
-        <div><div class="bar-container"><div class="bar-fill" style="width:100%;background:#ef4444;">~$3,045</div></div></div>
-        <div></div>
-      </div>
-      <div class="bar-row">
-        <div><span class="phase-badge p1">P1</span> Caching</div>
-        <div>~$0.087</div>
-        <div><div class="bar-container"><div class="bar-fill" style="width:100%;background:#f59e0b;">~$3,045 (once)</div></div></div>
-        <div style="color:var(--accent-teal);font-size:13px;">No retry</div>
-      </div>
-      <div class="bar-row">
-        <div><span class="phase-badge p2">P2</span> Selective</div>
-        <div style="color:var(--accent-amber);">~$0.037</div>
-        <div><div class="bar-container"><div class="bar-fill" style="width:43%;background:#fbbf24;">~$1,295</div></div></div>
-        <div style="color:var(--accent-teal);font-weight:600;">~-57%</div>
-      </div>
-      <div class="bar-row">
-        <div><span class="phase-badge p3">P3</span> Vision <span style="font-size:11px;color:var(--text-muted);">(if validated)</span></div>
-        <div style="color:var(--accent-teal);">$0.006</div>
-        <div><div class="bar-container"><div class="bar-fill" style="width:7%;background:#4ade80;">$210</div></div></div>
-        <div style="color:var(--accent-teal);font-weight:600;">-93%</div>
-      </div>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-card rose">
-        <div class="value">~$3,045</div>
-        <div class="label">Current (per 35K case)</div>
-      </div>
-      <div class="stat-card amber">
-        <div class="value">~$1,295</div>
-        <div class="label">Phase 2 (projected)</div>
-      </div>
-      <div class="stat-card teal">
-        <div class="value">~$210</div>
-        <div class="label">Phase 3 (if validated)</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 19: Next Steps -->
-  <section id="nextsteps">
-    <div class="section-number">Section 19</div>
-    <div class="section-header">
-      <h2>Immediate Next Steps</h2>
-    </div>
-    <div class="action-item" style="border-left-color:var(--accent-teal);">
-      <h4>1. Implement Textract caching (1-2 days)</h4>
-      <p>SHA-256 hash per document &rarr; S3 cache lookup before Textract &rarr; cache store after. Stage-level resume for failed jobs.</p>
-    </div>
-    <div class="action-item" style="border-left-color:var(--accent-teal);">
-      <h4>2. Add cost estimation + confirmation + budget alarm</h4>
-      <p>Show estimated cost before extraction. Require confirmation above $50. CloudWatch alarm at $100/day Textract spend.</p>
-    </div>
-    <div class="action-item" style="border-left-color:var(--accent-amber);">
-      <h4>3. Build page-level triage (Phase 2)</h4>
-      <p>DetectDocumentText pass &rarr; rule-based page classifier &rarr; targeted AnalyzeDocument. Validate on test cases before production.</p>
-    </div>
-    <div class="action-item" style="border-left-color:var(--accent-purple);">
-      <h4>4. Design Claude Vision accuracy benchmark (Phase 3)</h4>
-      <p>Cell-by-cell table comparison, field-by-field form comparison. Zero tolerance for hallucinated values. Run on real medical records.</p>
-    </div>
-
-    <!-- Summary -->
-    <div style="margin-top:48px;padding:40px;background:linear-gradient(135deg, rgba(251,113,133,0.06) 0%, rgba(52,211,153,0.06) 100%);border:1px solid var(--border);border-radius:var(--radius);text-align:center;">
-      <h2 style="font-size:28px;font-weight:700;margin-bottom:24px;">Summary</h2>
-      <div class="stat-grid">
-        <div class="stat-card rose">
-          <div class="value">$2,514</div>
-          <div class="label">This month's bill <span class="badge badge-blue" style="font-size:9px;">Verified</span></div>
-        </div>
-        <div class="stat-card amber">
-          <div class="value">~$1,531</div>
-          <div class="label">Avoidable with caching <span class="badge badge-amber" style="font-size:9px;">Est.</span></div>
-        </div>
-        <div class="stat-card teal">
-          <div class="value">~57%</div>
-          <div class="label">Projected reduction <span class="badge badge-amber" style="font-size:9px;">Projected</span></div>
-        </div>
-      </div>
-      <div class="callout" style="text-align:left;margin:24px auto 16px;max-width:720px;">
-        <strong>The bill was caused by repeated extraction runs without caching, compounded by a 14x cost-tracking error.</strong>
-      </div>
-      <div class="callout success" style="text-align:left;margin:0 auto;max-width:720px;">
-        <strong>The path forward:</strong> Cache Textract results (never pay twice for the same document), then run expensive features only on pages that need them. Textract's deterministic extraction stays &mdash; it's what makes Trust but Verify possible. We optimize <em>where</em> it runs, not <em>whether</em> it runs.
-      </div>
-      <p style="color:var(--text-muted);margin-top:24px;font-size:13px;">ThriveAI &mdash; February 2026</p>
-    </div>
-  </section>
 
 </div>
 
@@ -1517,12 +1110,10 @@ function scrollTo(event, id) {
   event.preventDefault();
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
-  // Update active nav
   document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
   event.currentTarget.classList.add('active');
 }
 
-// Highlight active nav on scroll
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.sidebar nav a');
 
